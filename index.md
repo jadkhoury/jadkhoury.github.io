@@ -1,7 +1,24 @@
-# Jad-Nicolas Khoury
-
 I am a Master student in Computer Science at the [EPFL](http://www.epfl.ch) and am currently looking for a 6 months internship starting August or September 2017. 
 I am very passionate about all rendering technologies, from shading libraries like OpenGL to game engine like Unity. 
+
+## Education
+
+#### High School 
+_2009 - 2012_
+General Scientific Branch, Engineering Sciences orientation, Mathematics Speciality, at the [_Lazaristes_](http://www.auxlazaristes.fr/lycee-aux-lazaristes/)
+At the end of my high school I obtained the "Very Good" mention at the National Exam _(Baccalauréat Général, Série S, Specialité Science de l'Ingénieur, Ens. Spécial Mathématiques)_
+Relevant subjects: 
+- Mathematics: 90%
+- Physics and Chemistry: 95%
+- Engineering Sciences: 80%
+- French (average of oral and written exam) 85%
+- Philosophy: 80%
+
+#### Bachelor Degree
+_2012 - 2016_
+B.Sc. in Computer Sciences at the [EPFL](http://www.epfl.ch).
+
+
 ### Markdown
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
