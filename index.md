@@ -3,10 +3,10 @@ I am very passionate about all rendering technologies, from shading libraries li
 
 ## Education
 
-#### High School 
-_2009 - 2012_
-General Scientific Branch, Engineering Sciences orientation, Mathematics Speciality, at the [_Lazaristes_](http://www.auxlazaristes.fr/lycee-aux-lazaristes/)
-At the end of my high school I obtained the "Very Good" mention at the National Exam _(Baccalauréat Général, Série S, Specialité Science de l'Ingénieur, Ens. Spécial Mathématiques)_
+### High School 
+_2009 - 2012_  
+General Scientific Branch, Engineering Sciences orientation, Mathematics Speciality, at the [_Lazaristes_](http://www.auxlazaristes.fr/lycee-aux-lazaristes/)  
+At the end of my high school I obtained the "Very Good" mention at the National Exam _(Baccalauréat Général, Série S, Specialité Science de l'Ingénieur, Ens. Spécial Mathématiques)_  
 Relevant subjects: 
 - Mathematics: 90%
 - Physics and Chemistry: 95%
@@ -14,11 +14,45 @@ Relevant subjects:
 - French (average of oral and written exam) 85%
 - Philosophy: 80%
 
-#### Bachelor Degree
-_2012 - 2016_
-B.Sc. in Computer Sciences at the [EPFL](http://www.epfl.ch).
+### Bachelor Degree
+_2012 - 2016_  
+B.Sc. in Computer Sciences at the [EPFL](http://www.epfl.ch).  
+
+##### Relevant Courses: 
+- Analysis I, II, III
+- General Physics I, II
+- Linear Optimisation
+- Numerical Analysis
+- Algorithms
+- Theory of Computation, Theoretical Computer Science
+- Computer Network, Network Security
+- OOP
+- Software Engineering (Study of Agile, Waterfall etc ...)
+- Quantum Information Science
+- Digital Photography (previously _Introduction to computer Vision_
+- Database
+- Introduction to Computer Graphics
+
+##### Course Projects
+###### SmartTab Android App 
+_Software Engineering_    
+- Implemented in a group of 6 students, using the Agile development methods and Git version control
+- Implementation of an Android app that can read and play guitar tabs.
+- Creation of a custom tab filetype using JSon Schema
+- Use of guitar audio samples to play the tab in real time in the application
+
+###### Procedural Terrain Rendering
+_Introduction to Computer Graphics_  
+See **Personnal Project** section
+
+##### Bachelor Project
+###### Human Perception Of Guided Interaction
+See **Personnal Project** section
 
 
+
+
+###### Procedural Terrain Rendering
 ### Markdown
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
