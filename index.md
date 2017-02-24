@@ -1,4 +1,4 @@
-I am a Master student in Computer Science at the [EPFL](http://www.epfl.ch) and am currently looking for a 6 months internship starting August or September 2017. 
+I am a Master student in Computer Science at the [EPFL](http://www.epfl.ch) and am currently looking for a 6 months internship in Computer Graphics starting August or September 2017. 
 I am very passionate about all rendering technologies, from shading libraries like OpenGL to game engine like Unity. 
 
 ## Education
@@ -49,10 +49,23 @@ See **Personnal Project** section
 ###### Human Perception Of Guided Interaction
 See **Personnal Project** section
 
+### Master Degree
+_2016 - Present_ 
+M. Sc. in Computer Sciences at the [EPFL](http://www.epfl.ch).  
+
+##### Relevant Courses: 
+- Digital Geometry Processing
+- Machine Learning and Pattern Classification
+- Advanced Computer Graphics
+- Virtual Reality 
+- Computer Vision 
+
+##### Course Projects
 
 
 
-###### Procedural Terrain Rendering
+
+
 ### Markdown
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
