@@ -16,7 +16,7 @@
 body {
   overflow-x: hidden;
   font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  webkit-tap-highlight-color: #fed136
+  webkit-tap-highlight-color: #fed136;
 }
 
 .btn-primary,
@@ -262,8 +262,21 @@ header {
   color: #fff
 }
 
-header .projects {
+header.projects {
   background-image: url(../img/projects/code_image.png);
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-position: center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  text-align: center;
+  color: #fff
+}
+
+header.education {
+  background-image: url(../img/education/RLC2.jpg);
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-position: center center;
@@ -326,7 +339,7 @@ section h3.section-subheading {
 }
 
 section {
-  padding: 100px 0
+  padding: 10px
 }
 
 section h2.section-heading {
@@ -344,7 +357,7 @@ section h3.section-subheading {
 
 @media (min-width:768px) {
   section {
-    padding: 150px 0
+    padding: 80px 0
   }
 }
 
