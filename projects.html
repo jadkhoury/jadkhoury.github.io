@@ -60,11 +60,89 @@
       </div>
     </div>
   </header>
-  <section id="gr-projects">
+  <!-- SECTION: Rendering -->
+  <section id="rendering">
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-center">
-          <h2 class="section-heading">Group Projects</h2>
+          <h2 class="section-heading">Rendering</h2>
+          <hr class="primary"> </div>
+      </div>
+    </div>
+    <div class="container">
+      <!-- Terrain -->
+      <div class="row" id="terrain">
+        <div class="col-md-4"> <img src="img/projects/terrain.jpg" class="img-responsive" alt=""> </div>
+        <div class="col-md-8">
+          <h2> Procedural Planet Rendering Project </h2>
+          <h5 class="text-muted">  Spring 2016 - Computer Graphics Course </h5>
+          <p class="text-muted"> For this project I implemented an infinite terrain rendering program, that features: </p>
+          <ul class="text-muted">
+            <li>Dynamic distance-based tessellation</li>
+            <li>Adaptive texturing</li>
+            <li>On-the-fly heightmap computation</li>
+            <li>Ray-marching</li>
+            <li>Dynamic shadows</li>
+            <li>Optimized displacement using my own cycling buffers system</li>
+          </ul>
+          <p class="text-muted"> Learn more <a href="#"> here</a>
+            <br> <i>Languages and tools: OpenGL 4.x (for geometry, tesselation evaluation and tessellation control shaders), C++</i> </p>
+        </div>
+      </div>
+      <!-- \Terrain -->
+      <hr class="long">
+      <!-- WebGallery -->
+      <div class="row" id="WebGallery">
+        <div class="col-md-4"> <img src="img/current_projects/rayform.jpg" class="img-responsive" alt=""> </div>
+        <div class="col-md-8">
+          <h2> Web Gallery for Goal Based Caustics </h2>
+          <h5 class="text-muted">
+              Autumn & Spring 2016 - <a href="http://lgg.epfl.ch" target="_blank">LGG lab</a>
+            </h5>
+          <p class="text-muted"> Implementation of a WebGallery for <a href="http://rayform.ch" target="_blank">RayForm</a> to showcase the real-world effect of Rayform products.
+            <br> First, I implemented the scene rendering code in ThreeJS to run on the browser in real-time, allowing the user to interact with both the caustic object and the light source.
+            <br> Then, I developped a real-time ray tracer optimized for caustics computation in OpenGL and C++, that will run on an AWS G2 instance.
+            <br> The browser side then connects to the AWS instance, upload the parameters of the scene at each change, and then download and display the resulting light texture computed in the RayTracer.
+            <br> See the first term <a href="files/WebGallery_Report_V2.1.pdf" target="_blank">report</a> or learn more <a href="#"> here</a>
+            <br> <i>Languages and tools: ThreeJS, OpenGL, AWS G2 instances, C++</i> </p>
+        </div>
+      </div>
+      <!-- /WebGallery -->
+      <hr class="long"> </div>
+  </section>
+  <!-- SECTION: VR -->
+  <section id="VR">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <h2 class="section-heading">Virtual Reality</h2>
+          <hr class="primary"> </div>
+      </div>
+    </div>
+    <div class="container">
+      <!-- IIG -->
+      <div class="row" id="human-perc">
+        <div class="col-md-4"> <img src="img/projects/human-perc.png" class="img-responsive" alt=""> </div>
+        <div class="col-md-8">
+          <h2>  Human Perception of Guided Interaction </h2>
+          <h5 class="text-muted">
+              Spring 2015 - Bachelor Project at the <a href="http://iig.epfl.ch" target="_blank">IIG lab</a> 
+            </h5>
+          <p class="text-muted"> Developed, implemented and conducted an experiment studying the subject's perception of the manipulation of its visual feedback during an ISO 92141-9 standard multidirectional reaching task.
+            <br> The goal of this project was to find the thresshold of distortion intensity when the subject starts to notice a gap between the intended and the visible movement of his hand.
+            <br> See the report <a href="files/IIG_Report.pdf" target="_blank">here</a>
+            <br><i>Languages and tools: C# scripts, Unity Game Engine, PhaseSpace Motion Capture equipment, Occulus Rift DK2</i> </p>
+        </div>
+      </div>
+      <!-- /IIG -->
+      <hr class="long"> </div>
+  </section>
+  <!-- SECTION: VR -->
+  <section id="others">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <h2 class="section-heading">Others</h2>
           <hr class="primary"> </div>
       </div>
     </div>
@@ -87,68 +165,8 @@
             <br> <i>Languages and tools: Java, Android SDK, Git, Agile method</i> </p>
         </div>
       </div>
-    </div>
-  </section>
-  <section id="ind-projects">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <h2 class="section-heading">Individual Projects</h2>
-          <hr class="primary"> </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row" id="human-perc">
-        <div class="col-md-4"> <img src="img/projects/human-perc.png" class="img-responsive" alt=""> </div>
-        <div class="col-md-8">
-          <h2>  Human Perception of Guided Interaction </h2>
-          <h5 class="text-muted">
-              Spring 2015 - Bachelor Project at the <a href="http://iig.epfl.ch" target="_blank">IIG lab</a> 
-            </h5>
-          <p class="text-muted"> Developed, implemented and conducted an experiment studying the subject's perception of the manipulation of its visual feedback during an ISO 92141-9 standard multidirectional reaching task.
-            <br> The goal of this project was to find the thresshold of distortion intensity when the subject starts to notice a gap between the intended and the visible movement of his hand.
-            <br> See the report <a href="files/IIG_Report.pdf" target="_blank">here</a>
-            <br><i>Languages and tools: C# scripts, Unity Game Engine, PhaseSpace Motion Capture equipment, Occulus Rift DK2</i> </p>
-        </div>
-      </div>
-      <hr class="long">
-      <div class="row" id="terrain">
-        <div class="col-md-4"> <img src="img/projects/terrain.jpg" class="img-responsive" alt=""> </div>
-        <div class="col-md-8">
-          <h2> Procedural Planet Rendering Project </h2>
-          <h5 class="text-muted">  Spring 2016 - Computer Graphics Course </h5>
-          <p class="text-muted"> For this project I implemented an infinite terrain rendering program, that features: </p>
-          <ul class="text-muted">
-            <li>Dynamic distance-based tessellation</li>
-            <li>Adaptive texturing</li>
-            <li>On-the-fly heightmap computation</li>
-            <li>Ray-marching</li>
-            <li>Dynamic shadows</li>
-            <li>Optimized displacement using my own cycling buffers system</li>
-          </ul>
-          <p class="text-muted"> Learn more <a href="#"> here</a>
-            <br> <i>Languages and tools: OpenGL 4.x (for geometry, tesselation evaluation and tessellation control shaders), C++</i> </p>
-        </div>
-      </div>
-      <hr class="long">
-      <div class="row" id="WebGallery">
-        <div class="col-md-4"> <img src="img/current_projects/rayform.jpg" class="img-responsive" alt=""> </div>
-        <div class="col-md-8">
-          <h2> Web Gallery for Goal Based Caustics </h2>
-          <h5 class="text-muted">
-              Autumn & Spring 2016 - <a href="http://lgg.epfl.ch" target="_blank">LGG lab</a>
-            </h5>
-          <p class="text-muted"> Implementation of a WebGallery for <a href="http://rayform.ch" target="_blank">RayForm</a> to showcase the real-world effect of Rayform products.
-            <br> First, I implemented the scene rendering code in ThreeJS to run on the browser in real-time, allowing the user to interact with both the caustic object and the light source.
-            <br> Then, I developped a real-time ray tracer optimized for caustics computation in OpenGL and C++, that will run on an AWS G2 instance.
-            <br> The browser side then connects to the AWS instance, upload the parameters of the scene at each change, and then download and display the resulting light texture computed in the RayTracer.
-            <br> See the first term <a href="files/WebGallery_Report_V2.1.pdf" target="_blank">report</a> or learn more <a href="#"> here</a>
-            <br> <i>Languages and tools: ThreeJS, OpenGL, AWS G2 instances, C++</i> </p>
-        </div>
-      </div>
       <hr class="long"> </div>
   </section>
-
   <!-- jQuery -->
   <script src="vendor/jquery/jquery.min.js"></script>
   <!-- Bootstrap Core JavaScript -->
