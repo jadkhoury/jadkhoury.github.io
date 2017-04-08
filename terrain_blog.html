@@ -47,7 +47,7 @@
         <div class="col-md-12 text-center">
           <h2 class="section-heading">Note to the reader</h2>
           <hr>
-          <p>This page is not a tutorial on how to render a terrain with a heightmap, but rather a summary of the algorithms I improved or created to render the best possible heightmap-based terrain. These features have been implemented for the project of the Introduction to Computer Graphics course given at EPFL (CS-341), and <b>the complete source code can be found <a href="https://github.com/jadkhoury/ProceduralTerrain" target="_blank">here</a></b>. Also note that, as an effort to make the code snippets readable by anyone without having to read the source code, these snippets use the positive Y axis as up vector (instead of Z in my code), and some variable names have been changed. The features I implemented that did not require particular innovations on my part are listed at the end of this page along with the tutorials or paper I used.  You can visit my web page at <a href="http://jadkhoury.github.com" target="_blank">jadkhoury.github.com</a> to take a look at my other projects, and don't hesitate to <a href="mailto:jad-nicolas.khoury@epfl.ch" target="_top">contact me</a> if you have any question,
+          <p>This page is not a tutorial on how to render a terrain with a heightmap, but rather a summary of the algorithms I improved or created to render the best possible heightmap-based terrain. These features have been implemented for the project of the Introduction to Computer Graphics course given at EPFL (CS-341), and <b>the complete source code can be found <a href="https://github.com/jadkhoury/ProceduralTerrain" target="_blank">here</a></b>. Also note that, as an effort to make the code snippets readable by anyone without having to read the source code, these snippets use the positive Y axis as up vector (instead of Z in my code), and some variable names have been changed. The features I implemented that did not require particular innovations on my part are listed at the end of this page along with the tutorials or papers I used.  You can visit my web page at <a href="http://jadkhoury.github.com" target="_blank">jadkhoury.github.com</a> to take a look at my other projects, and don't hesitate to <a href="mailto:jad-nicolas.khoury@epfl.ch" target="_top">contact me</a> if you have any question,
             <br>Cheers !
             <br>Jad</p>
         </div>
@@ -115,7 +115,7 @@ void main() {
         <div class="col-md-4"> <img src="img/terrain/height.tga" class="img-responsive" alt=""> </div>
         <div class="col-md-8">
           <p class="text-muted"> The goal is to find a way to create a heightmap resulting in a realistic mountainous terrain. The first intuition would be to superpose different instantiations of Fractional Brownian Motion, shifted and/or rotated at each iteration. The problem with this approach is that the rendered terrain looks very "roundish", as FBM doesn't generate peaks and trenches.
-            <br> <a href="https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf" target="_blank">This paper</a> from <i>F. Kenton Musgrave</i> proposes a Hybrid Multifractal algorithm that generates exactly the kind of peaks and trenches we're looking for, but a simple iteration of this algorithm only produces lines of mountains with very smooth flat area (cF the "riges" of this paper). The best compromise has been to combine iterations of both FBM and Hybrid Multifractal to get the look needed: (in fragment shader) </p> <pre class="prettyprint lang-cpp">//Code from noise_fshader.glsl in the source
+            <br> <a href="https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf" target="_blank">This paper</a> from <i>F. Kenton Musgrave</i> proposes a Hybrid Multifractal algorithm that generates exactly the kind of peaks and trenches we're looking for, but a simple iteration of this algorithm only produces lines of mountains with very smooth flat areas (cF the "riges" of this paper). The best compromise has been to combine iterations of both FBM and Hybrid Multifractal to get the look needed: (in fragment shader) </p> <pre class="prettyprint lang-cpp">//Code from noise_fshader.glsl in the source
 float getTerrainHeight(vec2 pos){
     vec2 p = pos*density;
     float b2 = fbm(p*10)*0.2;
@@ -129,7 +129,7 @@ float getTerrainHeight(vec2 pos){
         <div class="col-md-12">
           <p class="text-muted"> The <code class="prettyprint lang-cpp">density</code> variable is a simple float that is used to spread or condensate the heightmap.
             <br> By playing around with the position sent to the hyrbidMultifractal function and the scaling applied to the returned height value of this function, we can superpose layers of terrain to get more or less details, and more or less rugosity.
-            <br> Now that we know how to generate a heightmap point given a point, all that remains to do in the main is to render it on the fragment as the color</p><pre class="prettyprint lang-cpp">//Code from noise_fshader.glsl in the source
+            <br> Now that we know how to generate a heightmap point given a UV coordinate, all that remains to do in the main() is to render it on the fragment as the color</p><pre class="prettyprint lang-cpp">//Code from noise_fshader.glsl in the source
 void main(){
   color = getTerrainHeight(uv);
 }</pre>
@@ -158,9 +158,9 @@ void main(){
       <div class="row">
         <div class="col-md-6"> <img src="img/terrain/displacement.jpg" class="img-responsive" alt=""> </div>
         <div class="col-md-6">
-          <p class="text-muted">With this implementation, the heightmap is indeed infinite, but the smallest displacement result in the code computing the whole heightmap again. But, as shown on the schema, when moving along the displacement vector <code class="prettyprint lang-cpp">d</code> only a small fraction of the heightmap is new (in red) To solve this waste of time and ressources, the solution would be to read the previous value of the heightmap when possible, and compute only the points necessary.
+          <p class="text-muted">With this implementation, the heightmap is indeed infinite, but the smallest displacement results in the code computing the whole heightmap again. But, as shown on the schema, when moving along the displacement vector <code class="prettyprint lang-cpp">d</code>, only a small fraction of the heightmap is new (in red). To solve this waste of time and ressources, the solution would be to read the previous value of the heightmap when possible, and compute only the points when necessary.
             <br> To do so, we need not only to pass to the fragment shader the vector of cumulated displacement, but also the vector representing the <b>new</b> displacement at that frame. This vector allows us to define which points of the texture we have to compute, and which we can read from our previous computation.
-            <br> We now have to be careful with our use of <code class="prettyprint lang-cpp">displacement</code> and <code class="prettyprint lang-cpp">new_displacement</code>. When computing new points, we use the total displacement as before. But when reading from the previous heightmap, the point previously generated already took into account the cumulated displacement as it was during the previous loop. So now, we only have to shift the uv we want to read by the new displacement, giving us the following code: </p>
+            <br> We now have to be careful with our use of <code class="prettyprint lang-cpp">displacement</code> and <code class="prettyprint lang-cpp">new_displacement</code>. When computing new points, we use the total displacement as before. But when reading from the previous heightmap, the point previously generated already took into account the cumulated displacement as it was during the previous loop. So now, we only have to shift the UV we want to read by the new displacement, giving us the following code: </p>
         </div>
       </div>
       <div class="row">
@@ -175,7 +175,7 @@ if(xReadZone && yReadZone){
     pos = uv + displacement;
      h = getTerrainHeight(pos);
 } </pre>
-          <p class="text-muted">On last detail to take into account is that if we allow interpolation in the float framebuffer used for the heightmap, each time we move (so many times per seconds) we smooth the heightmap, resulting in just a few seconds in a roundish terrain. The solution to this problem is to discretize the cumulated and new displacement vector in function of the dimensions of the framebuffer: </p> <pre class="prettyprint lang-cpp">//Code from Noise.h in the source
+          <p class="text-muted">One last detail to take into account is that if we allow interpolation in the float framebuffer used for the heightmap, each time we move (up to 60 times per seconds), we smooth the heightmap, resulting in just a few seconds in a roundish terrain. The solution to this problem is to discretize the cumulated and new displacement vector in function of the dimensions of the framebuffer: </p> <pre class="prettyprint lang-cpp">//Code from Noise.h in the source
 float roundToPrecision(float precision, float value){
     return precision * round(value/precision);
 }
@@ -217,7 +217,7 @@ void move(vec2 delta){
       <div class="row">
         <div class="col-md-12">
           <p>
-            <br>Given that <code class="prettyprint lang-cpp">modified</code> represent whether or not some parameter of the heightmap changed, <code class="prettyprint lang-cpp">displaced</code> is <code class="prettyprint lang-cpp">true</code> if there is a new displacement since the last frame, here is what the code looks like in the fragment shader of the heightmap generator:</p> <pre class="prettyprint lang-cpp">//Code from noise_fshader.glsl in the source
+            <br>Given that <code class="prettyprint lang-cpp">modified</code> represents whether or not some parameter of the heightmap changed, <code class="prettyprint lang-cpp">displaced</code> is <code class="prettyprint lang-cpp">true</code> if there is a new displacement since the last frame. Here is what the code looks like in the fragment shader of the heightmap generator:</p> <pre class="prettyprint lang-cpp">//Code from noise_fshader.glsl in the source
             
 float readLastBuffer(vec2 uv){
     return (last_buffer == 1) ? texture(height_map, uv).r : texture(height_map2, uv).r;
@@ -289,7 +289,7 @@ if(last_buffer == 1){
       <div class="row">
         <div class="col-md-6"> <img src="img/terrain/textures.jpg" class="img-responsive" alt=""> </div>
         <div class="col-md-6">
-          <p class="text-muted">I assume the reader knows the basics of shading in OpenGL (i.e. how to implement Phong shading). Now that we have our beautiful terrain generated with the heightmap, we would like to texture it in function of the height of the fragment. We want sand at low altitues, grass at "middle" altitudes, and snow at high altitudes. One thing to avoid is to have abrupt change in texturing, resulting in ugly transition between snow, grass and sand. So in addition to simply testing the height of the fragment against altitude limits, we create a "mixing zone" around this limit where we linearily mix the textures above and under: </p><pre class="prettyprint lang-cpp">//Code from terrain_fshader.glsl in the source
+          <p class="text-muted">I assume the reader knows the basics of shading in OpenGL (i.e. how to implement Phong shading). Now that we have our beautiful terrain generated with the heightmap, we would like to texture it in function of the height of the fragment. We want sand at low altitudes, grass at "middle" altitudes, and snow at high altitudes. One thing to avoid is to have abrupt change in texturing, resulting in ugly transition between snow, grass and sand. So in addition to simply testing the height of the fragment against altitude limits, we create a "mixing zone" around this limit where we linearily mix the textures above and under: </p><pre class="prettyprint lang-cpp">//Code from terrain_fshader.glsl in the source
 if (height > snow_height + mix_zone){
     phong_kd = snow;
 } else if (height > snow_height - mix_zone) {
@@ -316,7 +316,7 @@ grass = mix(grass, rock, coef);
 snow = mix(snow, rock, coef);
 coef = smoothstep(0.90, 0.98, angleDiff);
 grass = mix(grass, snow, coef);</pre>
-          <p class="text-muted">There is just one tiny detail that need to be fixed: since the camera is fixed and it's the heightmap that actually moves, if we just use the standard UVs when reading the textures, we see the terrain moving but the textures stay stationnary ! This is easily solved by passing the displacement vector to the shaders of the terrain and using <code class="prettyprint lang-cpp">vec2 current_uv = UV + displacement</code> when reading the texture.</p>
+          <p class="text-muted">There is just one tiny detail that needs to be fixed: since the camera is fixed and it's the heightmap that actually moves, if we just use the standard UVs when reading the textures, we see the terrain moving but the textures stay stationnary ! This is easily solved by passing the displacement vector to the shaders of the terrain and using <code class="prettyprint lang-cpp">vec2 current_uv = UV + displacement</code> when reading the texture.</p>
         </div>
         <div class="col-md-6">
           <br><img src="img/terrain/tex_result.jpg" class="img-responsive" alt=""> </div>
@@ -335,7 +335,7 @@ grass = mix(grass, snow, coef);</pre>
       <div class="row">
         <div class="col-md-6"> <img src="img/terrain/night.jpg" class="img-responsive" alt=""> </div>
         <div class="col-md-6">
-          <p class="text-muted"> I wanted my program to be able to simulate a full day cycle. So before anything, we need a light that rotates around the horizon, which is easily done by assigning a rotation radius and then update the position in function of this radius and of the time: </p> <pre class="prettyprint lang-cpp">//Code from Light.h in the source
+          <p class="text-muted"> I wanted my program to be able to simulate a full day cycle. So before anything, we need a light that rotates around the horizon, which is easily done by assigning a rotation radius and then updating the position in function of this radius and the time: </p> <pre class="prettyprint lang-cpp">//Code from Light.h in the source
 void updateLightPos(float time){
     float t = time * speedFactor_;
     float x = circle_radius_ * cos(t);
@@ -343,7 +343,7 @@ void updateLightPos(float time){
     light_pos_ = vec3(x, y, 0);
     light_dir_ = -light_pos_;
 }</pre>
-          <p class="text-muted">We then use this light position for all of our shading and shadows computations. Regarding the looks of the terrain during the night, I wanted something very minimalist and peaceful, and decided to go with simple distance-base colouring of the terrain. The distance from the camera to a given vertex is found by applying the Model and View matrix (not the Projection !) to the vertex position and looking at the result's z coordinate. This is either done in the vertex shader or in the geometry shader (if you used tessellation). Once that distance is found, we can define the wanted color and scale it with this distance. A linear scaling does not yield a very satistying result, so I used a logarithmic scaling pretty close to sqrt:</p><pre class="prettyprint lang-cpp">//Code from terrain_fshader.glsl in the source
+          <p class="text-muted">We then use this light position for all of our shading and shadows computations. Regarding the looks of the terrain during the night, I wanted something very minimalist and peaceful, and decided to go with simple distance-base colouring for the terrain. The distance from the camera to a given vertex is found by applying the Model and View matrix (not the Projection !) to the vertex position and looking at the result's z coordinate. This is either done in the vertex shader or in the geometry shader (if you used tessellation). Once that distance is found, we can define the wanted color and scale it with this distance. A linear scaling does not yield a very satistying result, so I used a logarithmic scaling pretty close to sqrt:</p><pre class="prettyprint lang-cpp">//Code from terrain_fshader.glsl in the source
 vec3 computeNightColor(){
     vec3 c = vec3(0.0, 0.2, 0.3);
     vec3 nightColor = pow(-gDist/MAX_DISTANCE, 0.6) * c;
