@@ -39,11 +39,11 @@
           <li class="hidden">
             <a href="#page-top"></a>
           </li>
-          <li> <a class="page-scroll" href="index.html#page-top">Home</a> </li>
-          <li> <a class="page-scroll" href="projects.html">Projects</a> </li>
-          <li> <a class="page-scroll" href="education.html">Education</a> </li>
-          <li> <a class="page-scroll" href="files/CV.pdf" target="_blank">C.V.</a> </li>
-          <li> <a class="page-scroll" href="index.html#contact">Contact</a> </li>
+          <li> <a href="index.html#page-top">Home</a> </li>
+          <li> <a href="projects.html">Projects</a> </li>
+          <li> <a href="education.html">Education</a> </li>
+          <li> <a href="files/CV.pdf" target="_blank">C.V.</a> </li>
+          <li> <a href="index.html#contact">Contact</a> </li>
           <li> <a href="https://github.com/jadkhoury"><i class="fa fa-github"></i></a> </li>
           <li> <a href="https://www.linkedin.com/in/jadnicolaskhoury/"><i class="fa fa-linkedin"></i></a> </li>
         </ul>
@@ -61,8 +61,8 @@
     </div>
   </header>
   <!-- SECTION: Rendering -->
-  <section id="rendering">
-    <div class="container">
+  <section id="portfolio">
+    <div class="container" id="rendering">
       <div class="row">
         <div class="col-lg-12 text-center">
           <h2 class="section-heading">Rendering</h2>
@@ -72,7 +72,12 @@
     <div class="container">
       <!-- Terrain -->
       <div class="row" id="terrain">
-        <div class="col-md-4"> <img src="img/projects/terrain.jpg" class="img-responsive" alt=""> </div>
+        <div class="col-md-4 portfolio-item">
+          <a href="terrain_blog.html" target="_blank" class="portfolio-link">
+            <div class="portfolio-hover">
+              <div class="portfolio-hover-content"> <i class="fa fa-plus fa-3x"></i> </div>
+            </div> <img src="img/projects/terrain.jpg" class="img-responsive" alt=""> </a>
+        </div>
         <div class="col-md-8">
           <h2> Procedural Planet Rendering Project </h2>
           <h5 class="text-muted">  Spring 2016 - Computer Graphics Course </h5>
@@ -85,15 +90,20 @@
             <li>Dynamic shadows</li>
             <li>Optimized displacement using my own cycling buffers system</li>
           </ul>
-          <p class="text-muted"> Learn more <a href="terrain_blog.html" target="_blank"> here</a>
+          <p class="text-muted"><b> Learn more <a href="terrain_blog.html" target="_blank"> here</a></b>
             <br> <i>Languages and tools: OpenGL 4.x (for geometry, tesselation evaluation and tessellation control shaders), C++</i> </p>
         </div>
       </div>
       <!-- \Terrain -->
-      <hr class="long">
+      <hr class="long" id="WebGallery">
       <!-- WebGallery -->
-      <div class="row" id="WebGallery">
-        <div class="col-md-4"> <img src="img/current_projects/rayform.jpg" class="img-responsive" alt=""> </div>
+      <div class="row">
+        <div class="col-md-4 portfolio-item">
+          <a href="files/WebGallery_Report_V2.1.pdf" target="_blank" class="portfolio-link">
+            <div class="portfolio-hover">
+              <div class="portfolio-hover-content"> <i class="fa fa-plus fa-3x"></i> </div>
+            </div> <img src="img/current_projects/rayform.jpg" class="img-responsive" alt=""> </a>
+        </div>
         <div class="col-md-8">
           <h2> Web Gallery for Goal Based Caustics </h2>
           <h5 class="text-muted">
@@ -103,7 +113,7 @@
             <br> First, I implemented the scene rendering code in ThreeJS to run on the browser in real-time, allowing the user to interact with both the caustic object and the light source.
             <br> Then, I developped a real-time ray tracer optimized for caustics computation in OpenGL and C++, that will run on an AWS G2 instance.
             <br> The browser side then connects to the AWS instance, upload the parameters of the scene at each change, and then download and display the resulting light texture computed in the RayTracer.
-            <br> See the first term <a href="files/WebGallery_Report_V2.1.pdf" target="_blank">report</a> or learn more <a href="#"> here</a>
+            <br> <b>See the first term <a href="files/WebGallery_Report_V2.1.pdf" target="_blank">report</a>.</b>
             <br> <i>Languages and tools: ThreeJS, OpenGL, AWS G2 instances, C++</i> </p>
         </div>
       </div>
@@ -111,7 +121,7 @@
       <hr class="long"> </div>
   </section>
   <!-- SECTION: VR -->
-  <section id="VR">
+  <section id="portfolio">
     <div class="container">
       <div class="row">
         <div class="col-lg-12 text-center">
@@ -121,8 +131,13 @@
     </div>
     <div class="container">
       <!-- IIG -->
-      <div class="row" id="human-perc">
-        <div class="col-md-4"> <img src="img/projects/human-perc.png" class="img-responsive" alt=""> </div>
+      <div class="row" id="IIG">
+        <div class="col-md-4 portfolio-item">
+          <a href="files/IIG_Report.pdf" target="_blank" class="portfolio-link">
+            <div class="portfolio-hover">
+              <div class="portfolio-hover-content"> <i class="fa fa-plus fa-3x"></i> </div>
+            </div> <img src="img/projects/human-perc.png" class="img-responsive" alt=""> </a>
+        </div>
         <div class="col-md-8">
           <h2>  Human Perception of Guided Interaction </h2>
           <h5 class="text-muted">
@@ -130,7 +145,7 @@
             </h5>
           <p class="text-muted"> Developed, implemented and conducted an experiment studying the subject's perception of the manipulation of its visual feedback during an ISO 92141-9 standard multidirectional reaching task.
             <br> The goal of this project was to find the thresshold of distortion intensity when the subject starts to notice a gap between the intended and the visible movement of his hand.
-            <br> See the report <a href="files/IIG_Report.pdf" target="_blank">here</a>
+            <br> <b>See the report <a href="files/IIG_Report.pdf" target="_blank">here</a>.</b>
             <br><i>Languages and tools: C# scripts, Unity Game Engine, PhaseSpace Motion Capture equipment, Occulus Rift DK2</i> </p>
         </div>
       </div>
@@ -157,10 +172,10 @@
               Autumn 2014 - Software Engineering course
             </h5>
           <p class="text-muted"> Part of the top 3 best apps developed for the course that year.
-            <br> With a few classmates, we developed an Android application able to read, display and then play guitar tablatures with pre-recorded guitar sound samples. 
+            <br> With a few classmates, we developed an Android application able to read, display and then play guitar tablatures with pre-recorded guitar sound samples.
             <br> To make this happen, we developed a website and a back-end server to be able to upload tablatures from a browser and then download and play them on a smartphone.
-            <br> Creation of a custom filetype based on JSon Schema 
-            <br> The teachers of this course insist that the code remain on their private repository but don't hesitate to contact me for additional information. 
+            <br> Creation of a custom filetype based on JSon Schema
+            <br> The teachers of this course insist that the code remain on their private repository but don't hesitate to contact me for additional information.
             <br> <i>Languages and tools: Java, Android SDK, Git, Agile method</i> </p>
         </div>
       </div>
