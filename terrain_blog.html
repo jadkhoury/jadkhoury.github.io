@@ -47,7 +47,7 @@
         <div class="col-md-12 text-center">
           <h2 class="section-heading">Note to the reader</h2>
           <hr>
-          <p>This page is not a tutorial on how to render a terrain with a heightmap, and I assume the reader understand C++ and OpenGL code. This program has been developed in 3 months as a project for the Introduction to Computer Graphics course given at EPFL, and you can find the complete implementation <a href="https://github.com/jadkhoury/ProceduralTerrain" target="_blank">here</a>. The implementation detailed on this page does not represent the state-of-the-art of OpenGL implementations and optimization, but rather explain my contribution to existing algoritms and how I used them to implement nice features. The features implemented that did not require particular innovations on my part will be listed at the end of this page along with the tutorials or paper I used. You can visit my web page at <a href="http://jadkhoury.github.com" target="_blank">jadkhoury.github.com</a> to take a look at my other projects. Don't hesitate to <a href="mailto:jad-nicolas.khoury@epfl.ch" target="_top">contact me</a> if you have any question.
+          <p>This page is not a tutorial on how to render a terrain with a heightmap, and I assume the reader understand C++ and OpenGL code. This program has been developed in 3 months as a project for the Introduction to Computer Graphics course given at EPFL, and you can find the complete implementation <a href="https://github.com/jadkhoury/ProceduralTerrain" target="_blank">here</a>. The implementation detailed on this page does not represent the state-of-the-art of OpenGL implementations and optimization, but rather explain my contribution to existing algoritms and how I used them to implement nice features. The features implemented that did not require particular innovations on my part will be listed at the end of this page along with the tutorials or paper I used. Also note that, as an effort to make the code snippets readable by anyone without having to read the source code, these snippets use the positive Y axis as up vector (instead of Z in my code), and some variable names have been changed. You can visit my web page at <a href="http://jadkhoury.github.com" target="_blank">jadkhoury.github.com</a> to take a look at my other projects. Don't hesitate to <a href="mailto:jad-nicolas.khoury@epfl.ch" target="_top">contact me</a> if you have any question.
             <br> Cheers !
             <br> Jad</p>
         </div>
@@ -70,10 +70,11 @@
       <div class="row">
         <div class="col-md-12 text-center">
           <h4 class="text-muted">Procedural Heightmap generation on GPU</h4> </div>
+      </div>
+      <div class="row">
         <div class="col-md-12">
           <p class="text-muted">Instead of loading a heightmap in the program as a texture generated somewhere else, the first step is to render it ourselves on GPU. To make it procedural, we need the heightmap generation to take as a parameter the position of the point we want to generate, such that when we later move the user current position, the program generates the heightmap again, taking into account the new position. Heightmaps are actually noise texture that are manipulated such that the result, even if generated quasi-randomly, corresponds visually to a physical terrain. This is the reason why often in my code the heightmap is referred to as "noise" or "noise texture".
-            <br> Since we want to generate a texture, the C++ part of the code looks exactly like a program that renders a quad: </p> 
-          <pre class="prettyprint lang-cpp">const GLfloat vertex_point[] = { /*V1*/ -1.0f, -1.0f, 0.0f, /*V2*/ +1.0f, -1.0f, 0.0f, /*V3*/ -1.0f, +1.0f, 0.0f,  /*V4*/ +1.0f, +1.0f, 0.0f};
+            <br> Since we want to generate a texture, the C++ part of the code looks exactly like a program that renders a quad: </p> <pre class="prettyprint lang-cpp">const GLfloat vertex_point[] = { /*V1*/ -1.0f, -1.0f, 0.0f, /*V2*/ +1.0f, -1.0f, 0.0f, /*V3*/ -1.0f, +1.0f, 0.0f,  /*V4*/ +1.0f, +1.0f, 0.0f};
 // buffer
 glGenBuffers(1, &vertex_buffer_object_);
 glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
@@ -93,8 +94,7 @@ glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_texture_coordinates), vertex_texture
 GLuint vertex_texture_coord_id = glGetAttribLocation(program_id_,  "vtexcoord");
 glEnableVertexAttribArray(vertex_texture_coord_id);
 glVertexAttribPointer(vertex_texture_coord_id, 2, GL_FLOAT, DONT_NORMALIZE, ZERO_STRIDE, ZERO_BUFFER_OFFSET);</pre>
-          <p> The Vertex Shader is even simpler </p>
-          <pre class="prettyprint lang-cpp">in vec3 vpoint;
+          <p> The Vertex Shader is even simpler </p> <pre class="prettyprint lang-cpp">in vec3 vpoint;
 in vec2 vtexcoord;
 out vec2 uv;
 uniform mat4 MVP;
@@ -109,6 +109,8 @@ uv = vtexcoord;
       <div class="row">
         <div class="col-md-12 text-center">
           <h4 class="text-muted"> Heightmap generation</h4> </div>
+      </div>
+      <div class="row">
         <div class="col-md-4"> <img src="img/terrain/height.tga" class="img-responsive" alt=""> </div>
         <div class="col-md-8">
           <p class="text-muted"> The goal when looking for a good algorithm to generate the heightmap was to find a way to get a realistic mountainous terrain. The first intuition would be to superpose different instantiations of Fractional Brownian motion, shifted and/or rotated at each iteration. The problem with this approach is that the rendered terrain looks very "roundish", as FBM doesn't generate peaks and trenches.
@@ -121,6 +123,8 @@ float getTerrainHeight(vec2 pos){
     float h3 = hyrbidMultifractal(p*2.0, H, lacunarity, octaves, offset, gain)*0.3;
     return b2+h1+h2+h3-0.8;
 }</pre> </div>
+      </div>
+      <div class="row">
         <div class="col-md-12">
           <p class="text-muted"> The <code class="prettyprint lang-cpp">density</code> variable is a simple float that is used to spread or condensate the heightmap.
             <br> By playing around with the position sent to the hyrbidMultifractal function and the scaling applied to the returned height value of this function, we can superpose layers of terrain to get more or less details, and more or less rugosity.
@@ -136,6 +140,8 @@ float getTerrainHeight(vec2 pos){
       <div class="row">
         <div class="col-md-12 text-center">
           <h4 class="text-muted">Managing the displacement</h4> </div>
+      </div>
+      <div class="row">
         <div class="col-md-12">
           <p class="text-muted"> When generating the heightmap that way, we don't have many other choices than to leave the camera stationnary and actually move the position used for computing the heightmap. To do so, we have to store the cumulated ground displacement in a variable. Let's say the up-vector is (0,1,0), each time the C++ program wants to move in a certain direction, we have to update the heightmap displacement vector as <code class="prettyprint lang-cpp">displacement += vec2(move.x, move.z)</code>, then pass this vector to the fragment shader of the heightmap generator, and use it to compute the new heightmap as <code class="prettyprint lang-cpp">getTerrainHeight(uv + displacement)</code></p>
         </div>
@@ -146,12 +152,16 @@ float getTerrainHeight(vec2 pos){
       <div class="row">
         <div class="col-md-12 text-center">
           <h4 class="text-muted">Optimizing the displacement</h4> </div>
+      </div>
+      <div class="row">
         <div class="col-md-6"> <img src="img/terrain/displacement.jpg" class="img-responsive" alt=""> </div>
         <div class="col-md-6">
           <p class="text-muted">One can notice that when moving the heightmap a little, we recompute the whole texture, which can become quickly very expensive. As shown on the schema, when moving along the displacement vector <code class="prettyprint lang-cpp">d</code> only the red part of the heightmap is new. To solve this waste of time and ressources, the solution would be to read the previous value of the heightmap when possible, and compute only the points necessary.
             <br> To do so, we need not only to pass to the fragment shader the vector of cumulated displacement, but also the vector representing the <b>new</b> displacement at that frame. This vector allows us to define which points of the texture we have to compute, and which we can read from our previous computation.
             <br> We now have to be careful with our use of <code class="prettyprint lang-cpp">displacement</code> and <code class="prettyprint lang-cpp">new_displacement</code>. When computing new points, we use the total displacement as before. But when reading from the previous heightmap, the point previously generated already took into account the cumulated displacement as it was during the previous loop. So now, we only have to shift the uv we want to read by the new displacement, giving us the following code: </p>
         </div>
+      </div>
+      <div class="row">
         <div class="col-md-12"> <pre class="prettyprint lang-cpp">//Compute the new point if necessary, read it if possible
 bool xReadZone = (new_displacement.x > 0) ? (uv.x < (1.0 - new_displacement.x)) : (uv.x > -new_displacement.x);
 bool yReadZone = (new_displacement.y > 0) ? (uv.y < (1.0 - new_displacement.y)) : (uv.y > -new_displacement.y);
@@ -161,7 +171,23 @@ if(xReadZone && yReadZone){
 } else {
     pos = uv + displacement;
      h = getTerrainHeight(pos);
-} </pre> </div>
+} </pre>
+          <p class="text-muted">On last detail to take into account is that if we allow interpolation in the float framebuffer used for the heightmap, each time we move (so many times per seconds) we smooth the heightmap, resulting in just a few seconds in a roundish terrain. The solution to this problem is to discretize the cumulated and new displacement vector in function of the dimensions of the framebuffer: </p> <pre class="prettyprint lang-cpp">float roundToPrecision(float precision, float value){
+    return precision * round(value/precision);
+}
+vec2 roundToPrecision(float precision, vec2 value){
+    float x = roundToPrecision(precision, value.x);
+    float y = roundToPrecision(precision, value.y);
+    return vec2(x,y);
+}
+void move(vec2 delta){
+    //We set the displacement to a multiple of the "texel size" such that the
+    //interpolation doesn't smooth the terrain
+    vec2 d = roundToPrecision(1.0/float(tex_size_), delta);
+    new_displacement_ = d;
+    displacement_ = displacement_ + d;
+    displaced_ = true;
+}</pre> </div>
       </div>
       <!--/Optimization displacement -->
       <hr class="long">
@@ -169,6 +195,8 @@ if(xReadZone && yReadZone){
       <div class="row">
         <div class="col-md-12 text-center">
           <h4 class="text-muted">Buffers for optimization</h4> </div>
+      </div>
+      <div class="row">
         <div class="col-md-6"> <img src="img/terrain/buffers.jpg" class="img-responsive" alt=""> </div>
         <div class="col-md-6">
           <p class="text-muted"> The optimization is almost ready to go now. The only problem remaining is that we want to read the previous heightmap in order to generate the updated one. Unfortunately, it is not possible to read from a FrameBuffer while also writing in it. So we have to create a second buffer exactly in the same manner as the first one. In addition to this cloned buffer, we need to create a variable to store in which buffer we last wrote (e.g. <code class="prettyprint lang-cpp">int last_buffer = 1 //or 2</code>), along with a variable pointing to the current buffer. Where we previously passed the framebuffer texture, we now pass this variable. Moreover, at the first frame, we have to tell the shader code of the Heightmap Generator that we want it to render the whole heightmap (since we have nothing to read), and then at each frame: </p>
@@ -181,6 +209,8 @@ if(xReadZone && yReadZone){
             <li>Update the <code class="prettyprint lang-cpp">current_buffer</code> GLuint</li>
           </ul>
         </div>
+      </div>
+      <div class="row">
         <div class="col-md-12">
           <p>
             <br>Given that <code class="prettyprint lang-cpp">modified</code> represent whether or not some parameter of the heightmap changed, <code class="prettyprint lang-cpp">displaced</code> is <code class="prettyprint lang-cpp">true</code> if there is a new displacement since the last frame, here is what the code looks like in the fragment shader of the heightmap generator:</p> <pre class="prettyprint lang-cpp">float readLastBuffer(vec2 uv){
@@ -217,8 +247,8 @@ void main() {
         color = h;
     }
 } </pre>
-<br>And here is the C++ code where we cycle between the buffers:<br>
-<pre class="prettyprint lang-cpp"> // read buffer 1 write in 2
+          <br>And here is the C++ code where we cycle between the buffers:
+          <br> <pre class="prettyprint lang-cpp"> // read buffer 1 write in 2
 if(last_buffer == 1){
     height_buffer2_.bind();
     initViewport(tex_size,tex_size);
@@ -234,8 +264,7 @@ if(last_buffer == 1){
     height_buffer_.unBind();
     last_buffer = 1;
     current_noise_buffer_ = fb_tex_noise_;
-}</pre>
-</div>
+}</pre> </div>
       </div>
       <!-- /Heightmap -->
     </div>
@@ -266,22 +295,67 @@ if(last_buffer == 1){
 } else {
     phong_kd = sand;
 }</pre> </div>
-        <div class="col-md-8">
-          <br><p class="text-muted">The result is not bad but lacks in realism. An easy solution to this problem is to use the steepness of the terrain to define additionnal texturing zones. In particular, we would want patches of snow where the terrain is flat, and patches of rocks where the terrain is very steep. To do so, we have to look at the angle between the normal of the terrain and the vertical direction: <code class="prettyprint lang-cpp">angleDiff = abs(dot(currentNormal.xyz, vertical))</code> (assuming that both the vectors are normalized). Now that we have this variable representing how "steep" the terrain is, we can use it to create these patches. So before assigning the texture to the <code class="prettyprint lang-cpp">kd</code> component, we can overwrite the textures used for kd by the eventual patch texture: </p><pre class="prettyprint lang-cpp">float angleDiff = abs(dot(currentNormal.xyz, vertical));
+      </div>
+      <div class=row>
+        <div class="col-md-6">
+          <br>
+          <p class="text-muted">The result is not bad but lacks in realism. An easy solution to this problem is to use the steepness of the terrain to define additionnal texturing zones. In particular, we would want patches of snow where the terrain is flat, and patches of rocks where the terrain is very steep. To do so, we have to look at the angle between the normal of the terrain and the vertical direction: <code class="prettyprint lang-cpp">angleDiff = abs(dot(currentNormal.xyz, vertical))</code> (assuming that both the vectors are normalized). Now that we have this variable representing how "steep" the terrain is, we can use it to create these patches. So before assigning the texture to the <code class="prettyprint lang-cpp">kd</code> component, we can overwrite the textures used for kd by the eventual patch texture: </p><pre class="prettyprint lang-cpp">float angleDiff = abs(dot(currentNormal.xyz, vertical));
 float pureRock = 0.6;
 float lerpRock = 0.7;
 float coef = 1.0 - smoothstep(pureRock, lerpRock, angleDiff);
 grass = mix(grass, rock, coef);
 snow = mix(snow, rock, coef);
 coef = smoothstep(0.90, 0.98, angleDiff);
-grass = mix(grass, snow, coef);</pre>In my case, the result of this implementation looks like this:</div>
-        <div class="col-md-4">
+grass = mix(grass, snow, coef);</pre>
+          <p class="text-muted">There is just one tiny detail that need to be fixed: since the camera is fixed and it's the heightmap that actually moves, if we just use the standard UVs when reading the textures, we see the terrain moving but the textures stay stationnary ! This is easily solved by passing the displacement vector to the shaders of the terrain and using <code class="prettyprint lang-cpp">vec2 current_uv = UV + displacement</code> when reading the texture.</p>
+        </div>
+        <div class="col-md-6">
           <br><img src="img/terrain/tex_result.jpg" class="img-responsive" alt=""> </div>
       </div>
     </div>
   </section>
-          <!-- SECTION: textures -->
-  <section id="textures">
+  <section id="night">
+    <div class="container">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <h2 class="section-heading">Night Mode</h2>
+            <hr class="primary"> </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6"> <img src="img/terrain/night.jpg" class="img-responsive" alt=""> </div>
+        <div class="col-md-6">
+          <p class="text-muted"> I wanted my program to be able to simulate a full day cycle. So before anything, we need a light that rotates around the horizon, which is easily done by assigning a rotation radius and then update the position in function of this radius and of the time: </p> <pre class="prettyprint lang-cpp">void updateLightPos(float time){
+    float t = time * speedFactor_;
+    float x = circle_radius_ * cos(t);
+    float y = circle_radius_ * sin(t);
+    light_pos_ = vec3(x, y, 0);
+    light_dir_ = -light_pos_;
+}</pre>
+          <p class="text-muted">We then use this light position for all of our shading and shadows computations. Regarding the looks of the terrain when in the night, I wanted something very minimalist and peaceful, and decided to go with simple distance-base colouring of the terrain. The distance from the camera to a given vertex is found by applying the Model and View matrix (not the Projection !) to the vertex position and looking at the result's z coordinate. This is either done in the vertex shader or in the geometry shader (if you used tessellation). Once that distance is found, we can define the wanted color and scale it with this distance. A linear scaling does not yield a very satistying result, so I used a logarithmic scaling pretty close to sqrt:</p><pre class="prettyprint lang-cpp">vec3 computeNightColor(){
+    vec3 c = vec3(0.0, 0.2, 0.3);
+    vec3 nightColor = pow(-gDist/MAX_DISTANCE, 0.6) * c;
+    return nightColor;
+}</pre> </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p class="text-muted">With this scaling, the further the terrain is, the lighter it looks (cF image).
+            <br> Now we have to find a way to blend the day color into the night color when the time is right. This is where the light position comes in: since at night the "sun" will be under the horizon, we can use the height of the light as a coeficient to blend the day and night shading. Using the smoothstep OpenGL function, we get: </p><pre class="prettyprint lang-cpp">void main() {
+    float sunHeight = light_pos.y/MAX_HEIGHT;
+    vec3 day = computeDayColor();
+    vec3 night = computeNightColor();
+    float coef = smoothstep(-0.3, 0.0, sunHeight);
+    color = mix(night, day, coef);
+}</pre> <p class="text-muted">We can do exactly the same with two cubemap, one for the day, one for the night, and the night mode is done ! </p>
+          
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- SECTION: refereces -->
+  <section id="References">
     <div class="container">
       <div class="row">
         <div class="col-md-12 text-center">
@@ -294,44 +368,36 @@ grass = mix(grass, snow, coef);</pre>In my case, the result of this implementati
         <p class="text-muted">Here is a list of the the references I used to build this program: </p>
         <ul class="text-muted">
           <li><b>Heightmap computation:</b> <a href="https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf" target="_blank">This masterpiece of a paper</a> from F. Kenton Musgrave </li>
-            <li><b>Tesselation</b>: <a href="http://prideout.net/blog/?p=48" target="_blank">This tutorial</a> to start</li>
-            <li><b>Tesselation</b>: <a href="http://in2gpu.com/2014/06/27/stitching-and-lod-using-tessellation-shaders-for-terrain-rendering/" target="_blank">This tutorial</a> to understand LODs </li>
-            <li><b>Tesselation</b>: <a href="http://codeflow.org/entries/2010/nov/07/opengl-4-tessellation/" target="_blank">This tutorial</a> to use LODs for terrains </li>
-            <li><b>Shadows: </b> <a href="http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/" target="_blank">this excellent tutorial</a></li>
-            <li><b>Cubemap: </b><a href="https://learnopengl.com/#!Advanced-OpenGL/Cubemaps" target="_blank">This tutorial</a></li>
-           <li><b>Ray Marching: </b><a href="http://www.iquilezles.org/www/articles/terrainmarching/terrainmarching.htm" target="_blank">This tutorial</a> that I optimized by using dichotomy once the intersection is found to improve precistion (might add it to this page soon)</li>          
-          </ul>
-       
-    </div>
+          <li><b>Tesselation</b>: <a href="http://prideout.net/blog/?p=48" target="_blank">This tutorial</a> to start</li>
+          <li><b>Tesselation</b>: <a href="http://in2gpu.com/2014/06/27/stitching-and-lod-using-tessellation-shaders-for-terrain-rendering/" target="_blank">This tutorial</a> to understand LODs </li>
+          <li><b>Tesselation</b>: <a href="http://codeflow.org/entries/2010/nov/07/opengl-4-tessellation/" target="_blank">This tutorial</a> to use LODs for terrains </li>
+          <li><b>Shadows: </b> <a href="http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/" target="_blank">this excellent tutorial</a></li>
+          <li><b>Cubemap: </b><a href="https://learnopengl.com/#!Advanced-OpenGL/Cubemaps" target="_blank">This tutorial</a></li>
+          <li><b>Ray Marching: </b><a href="http://www.iquilezles.org/www/articles/terrainmarching/terrainmarching.htm" target="_blank">This tutorial</a> that I optimized by using dichotomy once the intersection is found to improve precistion (might add it to this page soon)</li>
+        </ul>
+      </div>
   </section>
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <span class="copyright">Jad Khoury</span>
-                </div>
-                <div class="col-md-4">
-                    <ul class="list-inline social-buttons">
-                        <li><a href="https://github.com/jadkhoury/" target="_blank"><i class="fa fa-github"></i></a>
-                        </li>
-                        <li> <a href="mailto:jad-nicolas.khoury@epfl.ch" target="_top"><i class="fa fa-envelope"></i></a>
-                        </li>
-                        <li><a href="https://www.linkedin.com/in/jadnicolaskhoury/" target="_blank"><i class="fa fa-linkedin"></i></a>
-                        </li>
-                       <li><a href="https:/jadkhoury.github.io/" target="_blank"><i class="fa fa-home"></i></a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <ul class="list-inline quicklinks">
-                        <li>2017</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4"> <span class="copyright">Jad Khoury</span> </div>
+        <div class="col-md-4">
+          <ul class="list-inline social-buttons">
+            <li><a href="https://github.com/jadkhoury/" target="_blank"><i class="fa fa-github"></i></a> </li>
+            <li> <a href="mailto:jad-nicolas.khoury@epfl.ch" target="_top"><i class="fa fa-envelope"></i></a> </li>
+            <li><a href="https://www.linkedin.com/in/jadnicolaskhoury/" target="_blank"><i class="fa fa-linkedin"></i></a> </li>
+            <li><a href="https:/jadkhoury.github.io/" target="_blank"><i class="fa fa-home"></i></a> </li>
+          </ul>
         </div>
-    </footer>
-          
+        <div class="col-md-4">
+          <ul class="list-inline quicklinks">
+            <li>2017</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
   <!-- jQuery -->
   <script src="vendor/jquery/jquery.min.js"></script>
   <!-- Bootstrap Core JavaScript -->
