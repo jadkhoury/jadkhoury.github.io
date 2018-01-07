@@ -127,7 +127,7 @@ void main() {
         </div>
       </div>
       <div class="row">
-        <div class="col-md-4"> <img src="img/terrain/height.tga" class="img-responsive" alt=""> </div>
+        <div class="col-md-4"> <img src="img/terrain/height.jpeg" class="img-responsive" alt=""> </div>
         <div class="col-md-8">
           <p class="text-muted"> The goal is to find a way to create a heightmap resulting in a realistic mountainous terrain. The first intuition would be to superpose different instantiations of Fractional Brownian Motion, shifted and/or rotated at each iteration. The problem with this approach is that the rendered terrain looks very "roundish", as FBM doesn't generate peaks and trenches.
             <br> <a href="https://www.classes.cs.uchicago.edu/archive/2015/fall/23700-1/final-project/MusgraveTerrain00.pdf" target="_blank">This paper</a> from <i>F. Kenton Musgrave</i> proposes a Hybrid Multifractal algorithm that generates exactly the kind of peaks and trenches we're looking for, but a simple iteration of this algorithm only produces lines of mountains with very smooth flat areas (cF the "riges" of this paper). The best compromise has been to combine iterations of both FBM and Hybrid Multifractal to get the look needed: (in fragment shader) </p>
