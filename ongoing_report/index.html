@@ -73,7 +73,7 @@ QuadTrees, and all LTrees in general, are by definition a recursive approach to 
 
 Subdiv Point (10 oct 2017)
 -------------------------
-Implementation of the QuadTree on GPU in Compute Shaders using J. Dupuy's ltree.glsl` shader to compute the keys and the transformations. In this demo, we see a set of points placed on a regular grid, corresponding to the QuadTree leaf position. When using the GUI's slider, we modify the traget subdivision level uniformly across the QuadTree. The Compute Shader then divides or merge the existing keys (one invocation per key) to match the desired subdivision level, and the render pass then decodes the list of the keys and use the obtained transformation as the points position. Everything shown is in unit space (from `(0,0)` to `(1,1)`)
+Implementation of the QuadTree on GPU in Compute Shaders using J. Dupuy's `ltree.glsl` shader to compute the keys and the transformations. In this demo, we see a set of points placed on a regular grid, corresponding to the QuadTree leaf position. When using the GUI's slider, we modify the traget subdivision level uniformly across the QuadTree. The Compute Shader then divides or merge the existing keys (one invocation per key) to match the desired subdivision level, and the render pass then decodes the list of the keys and use the obtained transformation as the points position. Everything shown is in unit space (from `(0,0)` to `(1,1)`)
 
 * The number of keys stored is kept in an **Atomic Counter**
 
