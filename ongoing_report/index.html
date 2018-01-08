@@ -123,6 +123,8 @@ Adaptive LoD: Distance Based
 ================
 Unitil now, every subdivision presented used an uniform level across the geometry, allowing us to explicitly define the target level and subdividing until that level is matched. Nevertheless, the goal of tessellation is to get a variable level of subdivision across the geometry. Usually, we aim at a fixed number of primitives (Triangles, Quads) per screen pixel. A good approximation of this ratio is to compute the LoD for a given primitive in function of the distance to the camera. To test this approach, I first implemented a simple 2D case where the position of the camera is simulated by a white point that can be displaced across the 2D scene using the keyboard arrows. Then I tested this approach in 2 different real-world application: procedural terrain from grids, and 3D mesh rendering. 
 
+To avoid T-Junctions in the mesh (and therefore possible cracks in the rendering), a morph function is necessary for a smooth transition between two LoDs. This morph merges the vertices and edges of a subdivided primitive, say at level `n`, with the vertices and edges remaining in the same primitive at level `n-1`. The morphing is controlled by a float variable, let's call it `morphK` taking values from 0 to 1, corresponding respectively to not morphed at all, to completely merged. Now consider the LoD as discretely decreasing in function of the distance. The `morphK` control variable should be null at the lower bound distance of a given LOD, progressively increase, and  reach 1 before the next LoD step, _i.e._ before the distance becomes great enough that the LoD assigned to the primitive is 1 less. As a result, we get, at approximately half the distance between two LoDs, a smooth transition between the closer and the further LoD, thus avoiding T-Junctions.  For Quads, the morphing implemented is the one presented in [Strugar, F., 2009. Continuous distance-dependent level of detail for rendering height-maps. Journal of graphics, GPU, and game tools, 14(4), pp.57-74. paper]. As triangles are also rotated, this morphing needed modifications, and I therefore modified it to become symmetrical _w.r.t._ the axis of the subdivision pattern. 
+
  Subdiv RealTime 1 (27 oct 2017)
 -------------------------
 This is an augmentation of the *Subdiv Triangles* where 
@@ -139,7 +141,7 @@ This is an augmentation of the *Subdiv Triangles* where
 
 * Switch from triangle to quad mode
 
-* To avoid T-Junction in the mesh (and therefore possible cracks in the rendering), a morph function is necessary for a smooth transition between two LoDs. For Quads, the morphing implemented is the one presented in [Strugar, F., 2009. Continuous distance-dependent level of detail for rendering height-maps. Journal of graphics, GPU, and game tools, 14(4), pp.57-74. paper]. As triangles are also rotated, this morphing needed modifications, and I therefore modified it to become symmetrical _w.r.t._ the axis of the subdivision pattern. 
+* Implementation of the CDLOD morphing function for quads, research and implementation of my solution for triangle primitives.
 
 * Use of more advanced Imgui features to show some real-time benchmark.
 
