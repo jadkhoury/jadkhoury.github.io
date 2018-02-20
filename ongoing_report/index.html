@@ -12,11 +12,11 @@ The goal of this project is to research and implement an efficient triangle and 
 
 Advanced OpenGL 4.5 functionalities
 ================
-Before starting to work on the project itself, I needed to understand and learn how to implement some more advanced features of OpenGL that I didn't needed before, such as Transform Feedback, Uniform Blocks / Uniform Buffers, Shader Storage Buffers, Atomic Counters and more. Therefore, the first few weeks of my thesis have been dedicated to acquiring more in-depth GPU programming skills. At the end of this period, I had a code base of 7 small self-contained programs that would serve me during the rest of the research. This section will briefly detail these implementations. 
+Before starting to work on the project itself, I needed to understand and learn how to implement some more advanced features of OpenGL that I didn't needed before, such as Transform Feedback, Uniform Blocks / Uniform Buffers, Shader Storage Buffers, Atomic Counters and more. Therefore, the first few weeks of my thesis have been dedicated to acquiring more in-depth GPU programming skills. At the end of this period, I had a code base of 7 small self-contained programs that would serve me during the rest of the research. This section will briefly detail these implementations.
 
 Particles Feedback (27 sept 2017)
 -------------------------
-Implementation of a simple particle system where the particles are spawned and given a random direction thanks to a uniform buffer storing a random table. Features acquired: 
+Implementation of a simple particle system where the particles are spawned and given a random direction thanks to a uniform buffer storing a random table. Features acquired:
 
 * OpenGL 4.5 **Direct State Access** functions (glNamed____)
 
@@ -33,7 +33,7 @@ Implementation of a simple particle system where the particles are spawned and g
 
 Particles Feedback 2 (29 sept 2017)
 -------------------------
-Augmentation of the *Particles Feedback* program with in particular: 
+Augmentation of the *Particles Feedback* program with in particular:
 
 * **Shader Storage Buffer Object** (SSBO) instead of Uniform Block
 
@@ -48,7 +48,7 @@ Augmentation of the *Particles Feedback* program with in particular:
 
 Particle Feedback CS (04 Oct 2017)
 -------------------------
-Augmentation of *Particles Feedback 2* with in particular: 
+Augmentation of *Particles Feedback 2* with in particular:
 
 * 2 different implementations: one with the positions in a VAO, and one with an **empty VAO and everything stored in SSBOs**
 
@@ -58,7 +58,7 @@ Augmentation of *Particles Feedback 2* with in particular:
 
 * Simple GUI using the external library **Imgui** (lighter than NanoGui)
 
-![Particles Feedback CS](images/videos/3-Particles_Feedback_CS.mp4) 
+![Particles Feedback CS](images/videos/3-Particles_Feedback_CS.mp4)
 
 
 
@@ -68,7 +68,7 @@ QuadTrees, and all LTrees in general, are by definition a recursive approach to 
 
 ![Figure [keys]: QuadTree key encoding](images/subdiv_keys_with_qt.svg width="500px")
 
- More details can be found in the Chapter of GPU Pro 5 dedicated to this implementation. 
+ More details can be found in the Chapter of GPU Pro 5 dedicated to this implementation.
 
 
 Subdiv Point (10 oct 2017)
@@ -85,7 +85,7 @@ Implementation of the QuadTree on GPU in Compute Shaders using J. Dupuy's `ltree
 
 Subdiv Quads (11 Oct 2017)
 -------------------------
-This program is an augmentation of *Subdiv Point* with: 
+This program is an augmentation of *Subdiv Point* with:
 
 * A 2 triangle mesh of a quad instead of points
 
@@ -100,7 +100,7 @@ This program is an augmentation of *Subdiv Point* with:
 
  Subdiv Quads 2 (12 oct 2017)
 -------------------------
-This program is an augmentation of *Subdiv Quads*, but required a **complete re-write of the `ltree.glsl` shader** to suit a new way of storing the key. Instead of having 4 bits at the end of the 32 bits bitstring reserved to store the subdivision level of a given leaf, we now have a 1 stored in front of the key itself, which serve as most significant bit to recover the level of the leaf. This is when the project became more challenging, as I had to re-implement completely every function that manipulate the keys. The most complicated part definitely was the transformation recovery from a key. To do so, we read the bitstring 2 bits by 2 bits, from root to leaf (_i.e._ from left to right), and accumulate both scaling and translation until we arrive at the end of the key, where we return the computed transformations as a `mat3` (to be applied to homogeneous 2D points). 
+This program is an augmentation of *Subdiv Quads*, but required a **complete re-write of the `ltree.glsl` shader** to suit a new way of storing the key. Instead of having 4 bits at the end of the 32 bits bitstring reserved to store the subdivision level of a given leaf, we now have a 1 stored in front of the key itself, which serve as most significant bit to recover the level of the leaf. This is when the project became more challenging, as I had to re-implement completely every function that manipulate the keys. The most complicated part definitely was the transformation recovery from a key. To do so, we read the bitstring 2 bits by 2 bits, from root to leaf (_i.e._ from left to right), and accumulate both scaling and translation until we arrive at the end of the key, where we return the computed transformations as a `mat3` (to be applied to homogeneous 2D points).
 
 * Implemented **own ltree** for quads
 
@@ -121,17 +121,17 @@ The original implementation of the QuadTree only handled quads. Triangles requir
 
 Adaptive LoD: Distance Based
 ================
-Unitil now, every subdivision presented used an uniform level across the geometry, allowing us to explicitly define the target level and subdividing until that level is matched. Nevertheless, the goal of tessellation is to get a variable level of subdivision across the geometry. Usually, we aim at a fixed number of primitives (Triangles, Quads) per screen pixel. A good approximation of this ratio is to compute the LoD for a given primitive in function of the distance to the camera. To test this approach, I first implemented a simple 2D case where the position of the camera is simulated by a white point that can be displaced across the 2D scene using the keyboard arrows. Then I tested this approach in 2 different real-world application: procedural terrain from grids, and 3D mesh rendering. 
+Unitil now, every subdivision presented used an uniform level across the geometry, allowing us to explicitly define the target level and subdividing until that level is matched. Nevertheless, the goal of tessellation is to get a variable level of subdivision across the geometry. Usually, we aim at a fixed number of primitives (Triangles, Quads) per screen pixel. A good approximation of this ratio is to compute the LoD for a given primitive in function of the distance to the camera. To test this approach, I first implemented a simple 2D case where the position of the camera is simulated by a white point that can be displaced across the 2D scene using the keyboard arrows. Then I tested this approach in 2 different real-world application: procedural terrain from grids, and 3D mesh rendering.
 
-To avoid T-Junctions in the mesh (and therefore possible cracks in the rendering), a morph function is necessary for a smooth transition between two LoDs. This morph merges the vertices and edges of a subdivided primitive, say at level `n`, with the vertices and edges remaining in the same primitive at level `n-1`. The morphing is controlled by a float variable, let's call it `morphK` taking values from 0 to 1, corresponding respectively to not morphed at all, to completely merged. Now consider the LoD as discretely decreasing in function of the distance. The `morphK` control variable should be null at the lower bound distance of a given LOD, progressively increase, and  reach 1 before the next LoD step, _i.e._ before the distance becomes great enough that the LoD assigned to the primitive is 1 less. As a result, we get, at approximately half the distance between two LoDs, a smooth transition between the closer and the further LoD, thus avoiding T-Junctions.  For Quads, the morphing implemented is the one presented in [Strugar, F., 2009. Continuous distance-dependent level of detail for rendering height-maps. Journal of graphics, GPU, and game tools, 14(4), pp.57-74. paper]. As triangles are also rotated, this morphing needed modifications, and I therefore modified it to become symmetrical _w.r.t._ the axis of the subdivision pattern. 
+To avoid T-Junctions in the mesh (and therefore possible cracks in the rendering), a morph function is necessary for a smooth transition between two LoDs. This morph merges the vertices and edges of a subdivided primitive, say at level `n`, with the vertices and edges remaining in the same primitive at level `n-1`. The morphing is controlled by a float variable, let's call it `morphK` taking values from 0 to 1, corresponding respectively to not morphed at all, to completely merged. Now consider the LoD as discretely decreasing in function of the distance. The `morphK` control variable should be null at the lower bound distance of a given LOD, progressively increase, and  reach 1 before the next LoD step, _i.e._ before the distance becomes great enough that the LoD assigned to the primitive is 1 less. As a result, we get, at approximately half the distance between two LoDs, a smooth transition between the closer and the further LoD, thus avoiding T-Junctions.  For Quads, the morphing implemented is the one presented in [Strugar, F., 2009. Continuous distance-dependent level of detail for rendering height-maps. Journal of graphics, GPU, and game tools, 14(4), pp.57-74. paper]. As triangles are also rotated, this morphing needed modifications, and I therefore modified it to become symmetrical _w.r.t._ the axis of the subdivision pattern.
 
  Subdiv RealTime 1 (27 oct 2017)
 -------------------------
-This is an augmentation of the *Subdiv Triangles* where 
+This is an augmentation of the *Subdiv Triangles* where
 
-* The instanced triangles are now drawn in **indirect mode**. 
+* The instanced triangles are now drawn in **indirect mode**.
 
-* The Compute Shader (Compute Pass) is in charge, for each leaf key, to **estimate the distance-based LoD** corresponding to its position _w.r.t._ the position of the "camera" (simulated by the white point). In function of this LoD, it either merges 4 children into a parent, divide a leaf into 4 children, or simply copy the existing key. 
+* The Compute Shader (Compute Pass) is in charge, for each leaf key, to **estimate the distance-based LoD** corresponding to its position _w.r.t._ the position of the "camera" (simulated by the white point). In function of this LoD, it either merges 4 children into a parent, divide a leaf into 4 children, or simply copy the existing key.
 
 * At each key write in the SSBO, the Compute Shader **atomically increments** the number of instance to draw (corresponding to the number of QuadTree leaves) directly in buffers dedicated to store the **Indirect Draw Command**. The `commands buffers` are managed separately in a `Commands` class, as their ping-pong mechanism is slightly different (need to reset the counters to 0 each `n` frames ...)
 
@@ -171,15 +171,15 @@ This is an augmentation of the *Subdiv Triangles* where
 
  Subdiv RealTime 2 (06 nov 2017)
 -------------------------
-This program is an augmentation of *Subdiv Realtime 1*. 
+This program is an augmentation of *Subdiv Realtime 1*.
 
-* Until now, all the subdivision were made on a single primitive explicitly defined in the QuadTree program. But the subdivision should work on any given 3D mesh. To suits this need, I implemented a **Mesh class** serving as interface between the "user" and the subdivision program. This class is in charge of loading the mesh, either from a _.obj_ file (for now), or generating it procedurally (for example: a grid). It then gives the the QuadTree program the list of vertices, quad indices and / or triangle indices, and the QuadTree program takes care of everything else. On the captured demo, the mesh is a simple 2 triangle quad, but the concept still applies: in addition to subdividing a given primitive, the program maps the primitive to its world-space position (mapping to its position on the mesh, then transforming using the model matrix). To verify that the mapping doesn't just work because of the unit space properties, I added some optional shear to the uploaded grid to test if the algorithm was robust to **non-identity model matrix**, and it was. 
+* Until now, all the subdivision were made on a single primitive explicitly defined in the QuadTree program. But the subdivision should work on any given 3D mesh. To suits this need, I implemented a **Mesh class** serving as interface between the "user" and the subdivision program. This class is in charge of loading the mesh, either from a _.obj_ file (for now), or generating it procedurally (for example: a grid). It then gives the the QuadTree program the list of vertices, quad indices and / or triangle indices, and the QuadTree program takes care of everything else. On the captured demo, the mesh is a simple 2 triangle quad, but the concept still applies: in addition to subdividing a given primitive, the program maps the primitive to its world-space position (mapping to its position on the mesh, then transforming using the model matrix). To verify that the mapping doesn't just work because of the unit space properties, I added some optional shear to the uploaded grid to test if the algorithm was robust to **non-identity model matrix**, and it was.
 
 * Since in the new implementation of the QuadTree leaf key, each subdivision takes 2 bits, and that the MSB representing the leaf subdivision level takes 2 bits also, the total number of subdivisions that allows the `int` format is 15 (`2 + 15 * 2 = 32 bits`). To overcome this limitation, I reimplemented every ltree function to be able to support a **`uvec2` key format**. As glsl doesn't offer the `long int` type, `uvec2` used properly can emulate a 64 bits integer by considering the two coordinates as concatenated. Some special operations have been reimplemented, in  particular left/right shift, findMSB, etc ... But the algorithm didn't change much. This now allows 31 subdivision levels (`2 + 31 * 2 = 64 bits`)
 
 * Some modifications have been added to leave some space for the GUI
 
-* In the LTree functions responsible for computing the transformation needed to map a leaf primitive to its place in the root primitive (*e.g.* map the unit triangle in the subdivided mesh triangle), rotation computations needed `cos` and `sin` evaluation (in OpenGL). But these operations are expensive and not very relevant when all angles are always a multiple of $\pi/4$, so I implemented a mul / add workaround to avoid these computations. 
+* In the LTree functions responsible for computing the transformation needed to map a leaf primitive to its place in the root primitive (*e.g.* map the unit triangle in the subdivided mesh triangle), rotation computations needed `cos` and `sin` evaluation (in OpenGL). But these operations are expensive and not very relevant when all angles are always a multiple of $\pi/4$, so I implemented a mul / add workaround to avoid these computations.
 
 ![](images/videos/9.1_Subdiv_RealTime_2_Uni.mp4)
 
@@ -200,6 +200,7 @@ This program is an augmentation of *Subdiv Realtime 1*.
 
 Subdiv Terrain (09 nov 2017)
 -------------------------
+
 * **Simulated camera** with a projection matrix, everything ported to 3D world-space
 
 * Render to square **framebuffer** (`viewer` class)
@@ -208,9 +209,9 @@ Subdiv Terrain (09 nov 2017)
 
 * Height displacement function from J.Dupuy
 
-* Addition of a **Cull Pass**: for each QuadTree leaf, I create a bounding box of the primitive corresponding to the treated leaf, map it to its world space coordinates, and use a function from J.Dupuy's framework to test it against the VP matrix and deduce if it should be culled or not. Nevertheless, this cull also required to adapt the ping-pong approach of the buffers, since the culled primitives should still be accessible in the next Compute Pass. For example, if a triangle was not visible in a frame `f` and therefore culled, but is supposed to be visible at frame `f+1`, then the QuadTree should stil be able to access it and eventually merge / divide it. For this reason, the  ping-pong implementation in the `Command class` has been modified to suit these constraints. 
+* Addition of a **Cull Pass**: for each QuadTree leaf, I create a bounding box of the primitive corresponding to the treated leaf, map it to its world space coordinates, and use a function from J.Dupuy's framework to test it against the VP matrix and deduce if it should be culled or not. Nevertheless, this cull also required to adapt the ping-pong approach of the buffers, since the culled primitives should still be accessible in the next Compute Pass. For example, if a triangle was not visible in a frame `f` and therefore culled, but is supposed to be visible at frame `f+1`, then the QuadTree should still be able to access it and eventually merge / divide it. For this reason, the  ping-pong implementation in the `Command class` has been modified to suit these constraints.
 
-* To verify the validity of the Cull Pass visually, a `freeze` button has been implemented in the GUI, that makes the QuadTree program bypass the Compute and Cull pass, and as a result freezes the QuadTree. 
+* To verify the validity of the Cull Pass visually, a `freeze` button has been implemented in the GUI, that makes the QuadTree program bypass the Compute and Cull pass, and as a result freezes the QuadTree.
 
 ![](images/videos/10.1_Subdiv_Terrain.mp4)
 
@@ -222,13 +223,14 @@ Subdiv Terrain (09 nov 2017)
 
 Subdiv Mesh (17 nov 2017)
 -------------------------
-As before, this is an augmentation of the *Subdiv Terrain* program. 
 
-* The whole code has been passed in 3D coordinates. 
+As before, this is an augmentation of the *Subdiv Terrain* program.
+
+* The whole code has been passed in 3D coordinates.
 
 * The reset of the Command Buffer value used as atomic counter and as instance count is now done locally on GPU (`glCopyNamedBufferSubData`) for performance reasons
 
-* Additionnal preprocessing step: The indices from the mesh triangles are reordered s.t. p[0] faces the longest edge (optimizes area balance in the created children when subdividing)
+* Additional preprocessing step: The indices from the mesh triangles are reordered s.t. p[0] faces the longest edge (optimizes area balance in the created children when subdividing)
 
 * Load of a real world **`.obj` mesh**, and enough buffer reloading functions have been implemented to allow the user to switch between mesh and terrain on the fly.
 
@@ -242,7 +244,7 @@ As before, this is an augmentation of the *Subdiv Terrain* program.
 
 ![](images/videos/11.2_Subdiv_Mesh_CPULoD.mp4)
 
-*Demo of the CPU LoD. In Red: the QuadTree primitives. In grey, the subdivision done on CPU in pre-process*
+*Demo of the CPU LoD. In Red: the QuadTree primitives. In gray, the subdivision done on CPU in pre-process*
 
 ![](images/videos/11.3_Subdiv_Mesh_Mesh.mp4)
 
@@ -251,22 +253,169 @@ As before, this is an augmentation of the *Subdiv Terrain* program.
 
 Limitations of the Distance Based Approach
 -------------------------
-As previously mentioned, one of the leading approach to tessellation is aiming at a constant number of primitives per rendered pixel. This goal is intuitively compatible with a LoD computed in function of the distance, as the projection matrix will, if a perspective is used as in most case, make far primitives small, and close primitives large. Nevertheless, this assumption infer a very strong constraint on the low poly mesh rendered (_i.e._ the 3D mesh before it gets tessellated), as the primitive should have relatively the same size. For this reason, the distance based approach works very well on regular grid that later gets displaced (e.g. terrain rendering), but can become very unsatisfactory when used on artist-designed meshes. 
+As previously mentioned, one of the leading approach to tessellation is aiming at a constant number of primitives per rendered pixel. This goal is intuitively compatible with a LoD computed in function of the distance, as the projection matrix will, if a perspective is used as in most case, make far primitives small, and close primitives large. Nevertheless, this assumption infer a very strong constraint on the low-poly mesh rendered (_i.e._ the 3D mesh before it gets tessellated), as the primitive should have relatively the same size. For this reason, the distance based approach works very well on regular grid that later gets displaced (_e.g._ terrain rendering), but can become very unsatisfactory when used on artist-designed meshes.
 
-To serve as demonstration, we use a polygonal mesh encoded once with regular primitive, and once with non regular primitives. 
+To serve as demonstration, we use a polygonal mesh encoded once with regular primitive, and once with non regular primitives.
 
- ![Figure [reg]: Regular mesh](images/DB_reg_uni_0.bmp)
- ![Figure [warp]: Warp mesh](images/DB_warp_uni_0.bmp)
+![Figure [reg]: Regular mesh](images/DB_reg_uni_0.bmp)
+![Figure [warp]: Warp mesh](images/DB_warp_uni_0.bmp)
 
- ![Figure [reg_nomorph]: Regular mesh, subdivided, no morph](images/DB_reg_LoD_NoMorph.bmp)
- ![Figure [warp_nomorph]: Warp mesh, subdivided, no morph](images/DB_warp_LoD_NoMorph.bmp)
- 
- ![Figure [reg_morph]: Regular mesh, subdivided, with morph](images/DB_reg_LoD_Morph.bmp)
- ![Figure [reg_morph]: Warp mesh, subdivided, with morph](images/DB_warp_LoD_Morph.bmp)
+![Figure [reg_nomorph]: Regular mesh, subdivided, no morph](images/DB_reg_LoD_NoMorph.bmp)
+![Figure [warp_nomorph]: Warp mesh, subdivided, no morph](images/DB_warp_LoD_NoMorph.bmp)
+
+![Figure [reg_morph]: Regular mesh, subdivided, with morph](images/DB_reg_LoD_Morph.bmp)
+![Figure [reg_morph]: Warp mesh, subdivided, with morph](images/DB_warp_LoD_Morph.bmp)
+
+
+Adaptive LoD: Screen-Space Based
+================
+As we don't want to assume any additional constraints on the input mesh, a Screen-Space approach has been developed to circumvent the mesh regularity requirement. Intuitively, we should chose a metric that is representative of the pixel-space area on which a given triangle spans. The larger the area, the more the triangle should be subdivided. Using the projected area itself is nevertheless not a great idea: intuitively, if we were to treat with this approach a very long and thin triangle with near-zero area, the LoD computed would be very low, hence not subdividing the triangle a lot and hiding many details of a displacement map (for example).
+
+The projected edge length could be a more robust alternative to the projected area, and is often used for its simplicity and intuitive validity. Nevertheless, this approach could also lead to problems near silhouettes, as illustrated on fig. [proj_edge].
+To palliate to both of these problems the chosen Screen-Space metric is the edges projected bounding sphere, like in Pixar's OpenSubdiv Real-Time API.
+
+![Figure [proj_edge]: Projected edge metric (both segments have same length in World Space)](images/projected_edges.svg)
+
+![Figure [proj_sphere]: Projected sphere metric (both segments have same length in World Space)](images/projected_sphere.svg)
+
+Since we chose to use the projected containing sphere diameter as the metric for the LoD evaluation, we should first determine which edge to  each time we treat a given triangle. We could evaluate on the mean projected metric on the three edges of the triangle, but that would break the linear quadtree constraint (_i.e._ 2 adjacent leaves cannot have more than one level of difference). We therefore chose to triangulate every mesh primitives into a triangle fan, an always evaluate the LoD on the hypotenuse of the instanced base primitive:
+
+![Figure [mappings_quad]: Triangulation of a Quad. Hypotenuse for LoD evaluation in orange)](images/mapping_quad.svg)
+
+![Figure [mappings_triangle]:  Triangulation of a Triangle. hypotenuse for LoD evaluation in orange)](images/mapping_triangle.svg)
+
+The desirable effects of this triangulation are threefold:
+
+* We can now assume that **all the quadtrees are triangular**, and most of the parts of the project that had to be adapted to both quad and triangle primitive are now simplified. As long as we triangulate, we always obtain triangle quadtrees and only the last step of the mappings from leaf to world-space is primitive-dependent. 
+
+* Since the base triangle is always a unit straight triangle $\{(0,0),(1,0),(0,1)\}$, we can deterministically  **always choose the same edge to be evaluated** for all drawn triangle: the hypotenuse
+
+* By the construction of our triangulation, we are ensured that the triangles instanced along the borders of the Mesh primitive always have their hypotenuse overlapping said Mesh edge. And since the LoD is evaluated on this hypotenuse, we are ensured that **two triangles that are adjacent but belong to two different mesh primitive always have the same LoD**, see fig. [hypo_along_edge]. For that reason, all T-Junction that could arise always do inside of the mesh primitive, between two triangles that our algorithm created. Hence the T-Junction removal problem is much more constrained and easy to solve. 
+
+![Figure [hypo_along_edge]: Advantage of Triangulation: hypotenuse of (darker) border base triangle always along mesh edge (in red)](images/hypo_along_edge.svg)
+
+
+Subdiv_ScreenSpace (21 nov 2017)
+-------------------------
+
+Based on *Subdiv Mesh*: 
+
+* Implementation of the triangulation for both quads and triangles
+* Implementation of the OpenSubdiv LoD function (projected sphere)
+* T-Junction still to solve
+
+Subdiv_ScreenSpace2D  (22 dec 2017)
+-------------------------
+
+To solve the T-Junction problem, the new _triangulation & screen-space metric_ approach required the Compute Pass to first detect and then remove T-Junctions in a local neighbourhood. 
+
+Detecting T-Junctions around a given triangle is equivalent to recovering the LoD of its adjacent triangles. By definition, a triangle can have only 3 neighbours, and as our instanced triangles are unit straight triangles, we can denote the H-Neighbour (H for hypotenuse), the X-Neighbour (sharing the $\left[(0,0) - (1,0)\right]$ edge, and the Y-neighbour (sharing the $\left[(0,0) - (0,1)\right]$ edge) as depicted in fig. [neighbours]. Since the LoD is evaluated on the hypotenuse, two H-Neighbours will always have the same LoD, and so at  a local scale, detecting T-Junctions consist in :
+
+1. Computing the coordinates in World-Space of the X-Neighbour and Y-Neighbour's hypotenuse (in orange in fig. [neighbours])
+
+1. Evaluating the LoDs from these coordinates
+
+1. Comparing the estimated LoDs with the current triangle LoD
+
+1. If inferior, we have detected a T-Junction
+
+_Note that we always check  for lower LoD to avoid ping-pong situation between two LoDs._
+
+![Figure [neighbours]: Neighbours relative to the blue triangle](images/neighbours.svg width="850px")
+
+To facilitate the second part of T-Junction removal (the removal itself), we do this evaluation on the parent's level. So in the depicted scenario, the the four children of the blue triangle will evaluate the adjacent for the same parent triangle. But since the two upper children (0 and 1) have no effect on the lower T-Junction, we can restrict the computation to detect T-Junctions along the relevant edge of the parent. The first step of the LoD check then becomes (leaving the rest of the algorithm unchanged): 
+
+1. Compute the relevant World-Space coordinates: 
+	* If current leaf is on the $\left[(0,0) - (1,0)\right]$ of the parent
+		* Compute the X-Neighbour hypotenuse World-Space coordinates 
+	* Else 
+		* Compute the Y-Neighbour hypotenuse World-Space coordinates 
+
+As easy as it sounds, the evaluation of the neighbour hypotenuse coordinates in World Space has been much harder to solve than expected and took me 3 weeks of research. In the end I had three separate approach to this problem: 
+
+1. Neighbour Key Recovering
+2. Pre-Mapping Reflect
+3. Post-Mapping Reflect
+
+As its name suggests, **Neighbour Key Recovering** consists in recovering the key of the relevant neighbour, and use it to map the unit space hypotenuse ($\left[(1,0) - (0,1)\right]$) to World-Space as we usually do in our Compute Pass. Nevertheless, finding the adjacent triangle from the current key is not trivial, as the pattern appearing in a subdivided quadtree shows no obvious relationship between two adjacent leaves key, as depicted on fig. [keys_extract].
+
+![Figure [keys_extract]: Extract of a uniformly subdivided triangle quadtree at level 3](images/keys_extract.svg )
+
+As the keys are built recursively, the first approach has been to decode the keys in a recursive routine, during which we treat the last branching of the key. 
+More precisely, our recursive routine $N$ is composed of two recursive subroutine $X_n$ and $Y_n$ that respectively compute X and Y neighbourhood keys, and a deterministic subroutine $Out$ that is called when the key decoding and computation indicates that the neighbour key is in an adjacent root triangle (cf fig. [mappings_quad] and fig. [mappings_triangle]). Let us define a sub-key by $A_i$ from an original key $A_0$ of level $n$ as 
+$$A_i = Q_n Q_{n-1} Q_{n-2} ... Q_{i-2} Q_{i-1} Q_{i} \; \textrm{where} \; Q_k \in \{0,1,2,3\} $$
+We obtain
+
+$$ N(A_i) = \left(N(A_{i-1}), N(Q_i)\right) $$
+Here, $N(Q_i)$ always returns a base4 value deterministically, but $N(A_{i-1})$ can either return the resulting key directly or continue in a recursive manner, depending on the subroutine the algorithm is currently in and the value of $Q_i$. The recursive subroutines will be detailed in the Master Thesis in the _Implementation Details_ section, but I will still give an example of Y-Neighbour key computation for the leaf 312.
+$$ A_0 = 312, \; N = Y_n$$
+
+\begin{align}
+Y_n(A_0) &= Y_n(312) \\
+& =  \left( X_n(31), Y_n(2)\right) \\
+& =  \left( X_n(31), 1 \right) \\
+& =  \left( (Y_n(3), 2), 1 \right) \\
+& =  \left( ((2), 2), 1 \right) \\
+&= 221
+\end{align}
+
+Looking at fig. [keys_extract], we see that 221 is indeed the Y-Neighbour of 312. From this key we can recover the world-space position of the relevant neighbour hypotenuse. Since recursion is not achievable on GPU, I broke down the subroutines and merged them in a function that follows the same steps and evaluations but in a state machine manner, the next state being dictated by the treated branching.
+This method has the advantage of tearing down the isolation constraint on our Compute Pass, since when executed on a given node it can now recover all the informations about neighboring nodes. This could be very advantageous in the future (_e.g._ when optimizing for textures), but seems a bit overkill for the original purpose. 
+
+This is why I started working on **Pre-Mapping Reflect**. The Idea is simple: we can easily compute the position of the hypotenuse of interest in Unit-Space, and from unit space map it to world-space. Depending on the relative position as a children, we choose one of two easily computed reflected hypotenuse and we then map these position to world space as we would have mapped the current node's parent, and we obtain the coordinates from which we can compute the LoD. 
+
+
+This approach works in most cases, but not when the current node is on the border of the root triangle and the desired neighbour lies on another root triangle. In this case, we reuse the $Out$ subroutine created for the recursive approach, compute the key of the neighbour of interest, and use it to map the standard unit hypotenuse to world space. We call $K_m$ the key used to map the unit-space hypotenuse $H_u$ algorithm is therefore as follow:
+
+- If the desired neighbour is outside the current root triangle
+	- $K_m = Out(K_{node})$
+	- $H_u = \left[(1,0) - (0,1)\right]$ 
+- Otherwise
+	- $K_m = Parent(K_{node})$
+	- If current node is on X Border of its parent
+		- $H_u = \left[(1,0) - (0,-1)\right]$ 
+	- Else (current node is on Y Border of its parent)
+		- $H_u = \left[(-1,0) - (0,1)\right]$  
+- Map $H_u$ to World-Space using $K_m$ 
+
+![Figure [unit_neigh]: Reflected hypotenuses in unit space](images/unit_neighbours.svg width="550px")
+
+The only problem with this approach is that we still need to map the unit reflected hypotenuse to World Space from the key, which is quite expensive. For this reason, we developed the **Post-Mapping Reflect**, which consist in reflecting the parent's hypotenuse _after_ we apply the mappings to the hypotenuse. Since we already computed the World-Space coordinates of the current node hypotenuse to evaluate its LoD, this approach allows us to save some computation and use these directly to compute the desired World-Space coordinates. We define the reflection $Reflect(P,O)$ as 
+\begin{align}
+Reflect(P,C) &= C + \vec{PC} \\
+& =  2C+P
+\end{align}
+We note $O$, $U$ and $R$ as in fig. [notations] and we call the two end-points of the searched hypotenuse $H_0$ and $H_1$ and $T$ a temporary point created for simplicity
+
+![Figure [notations]: Notations for the Post-Mapping Reflect](images/notations_reflect.svg)
+
+We now consider the nodes at the leaf level and not the parent, and we can now separate the 4 cases corresponding to the 4 position relative to the parent. 
+
+* **Case 0**
+\begin{align}
+H_0 &= U \\
+T  &= Reflect(R,O) \\
+H_1 &= Reflect(H_0,T) \\
+\end{align}
 
 
 
-<!--- 
+
+
+
+
+
+
+
+
+
+
+
+
+Conclusion
+================
+
+<!---
   Markdeep & image comparison library - probably no need to change anything below
 -->
 <style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="resources/markdeep.min.js"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
