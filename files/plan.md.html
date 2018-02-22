@@ -1,0 +1,157 @@
+<meta charset="utf-8">
+
+**Surface Subdivision on Compute Shaders - Master Thesis Plan**
+
+Jad Khoury, under the supervision of Jonathan Dupuy, Unity Technologies
+
+_I put in italic with question mark the parts which relevance or placement was not obvious to me_
+
+# Introduction
+* Define Surface Subdivision
+* Define the problem with current real time implementation [Research to do]
+* State our contributions 
+	* Subdiv level virtually infinite (float precision)
+	* Fully Adaptive
+	* No need to preprocess meshes
+* Present the plan 
+
+<!-- *************************************************************************************** -->
+# Quadtree: How to generate and delete geometry
+
+## Intuition
+* Explain intuitive idea behind quadtree
+* Explain recursive algorithm
+* State few used example and usual implementation [Research to do]
+* Explain 1 quadtree per mesh prim
+* Explain mappings from leaf primitive to final World-Space position
+
+## Previous Work: Linear Quadtre
+* Idea: Numerate the tess rule
+* Explain the key updates (divide & merge)
+* _Explain key data structure ? `vec4`, 2 ints concatenated..._
+* _Explain Buffers (SSBOs & Atomic Counter)?_
+* Explain how to recover transform from the key
+* _Explain restricted tree constraint ? Or leave it for LoD ?_
+
+## Contribution: Adapted to triangles
+* _Explain new keys with MSB for level?_
+* Detail new Tessellation Pattern
+* Buffers used the same way
+* Explain why and how I reimplemented the transform recovering from the key 
+
+<!-- *************************************************************************************** -->
+
+# LoD Function: Where do we need more geometry
+
+## Intuition
+* Explain why we need an LoD function
+* State goals of our LoD function
+	* _Explain restricted tree constraint ? Or leave it for Lin. QT. ?_ 
+	* Poly / px ratio to reach
+
+## Previous Work: Distance Based
+* Intuition behind distance based
+* CDLOD Approach [Read the article again]
+* _T-Junction removal: morph zones ?_
+* _Results ? Or leave it for Result section?_
+* Problem with distance based: assume regular meshes
+
+## Contribution: Screen-Space based
+* Explain metric
+* Say it's often used with Tess Shaders
+* Explain triangulation (recall mapping stuff)
+* _Results ? Or leave it for Result section?_
+
+<!-- *************************************************************************************** -->
+
+# T-Junction Removal: How to remove cracks from new geometry
+
+## Intuition: 
+* T-Junctions => cracks
+* Insight: merge triangles
+
+## Approach: 
+* Advantage of triangulation [Really need a clear way to explain that...]
+* Neighbour LoD evaluation 
+	* _Do I explain the 3 methods or just the latest one?_
+	* Explain chosen neighbour LoD check method(s)
+* Removing the t-junction: 
+	* _Morph / detroy bit in key `vec4` ? Or leave it for implementation details ?_
+	* Morphing the triangles
+
+<!-- *************************************************************************************** -->
+
+# Implementation details
+
+## Program structure: multiple passes 
+
+### First approach: 3 passes
+* Explain Compute Pass role
+	* How it works
+* Explain Cull Pass role
+	* How it works
+* Explain Render Pass role
+	* How it works
+	* Why it is so expensive
+
+### Second approach: Merge cull and compute pass
+* How I did it
+* Perf advantages (almost free culling)
+* _Explain copy pass here? Doesn't make sense without buffers explanations but would still fit in here_
+
+## Buffer Architecture
+
+### First approach
+* Array of indirect command buffers
+* Atomic increment in value
+* Explain cycling 
+* _Is `command` class explanation relevant?_
+
+### Second approach
+* Same arrays
+* only bind the relevant value as atomic counter
+* Still iterates through arrays of indirect commands
+
+### Third approach
+* Array of atomic counter
+* One draw indirect command buffer, one dispatch indirect buffer
+* Variable number of dispatch
+* Explain new cycling
+* _Explain copy pass here?_
+
+## Key decoding
+* _Explain key data structure here or when I explain quadtrees?_
+* Explain reading branching by branching
+* Explain transform accumulation 
+* _Explain bit-wise operations to optimise transform computing?_
+
+
+## Neighbour LoD check
+* If not explained before, explain here
+
+## _Further Optimisations ?_
+* Concatenation of two ints to hav longs without external OpenGL API
+* I'll find more stuff to put here if the section is relevant 
+
+# Results
+* We need to discuss what I put in here and what I compare to [Research to do]
+* How to get some error metrics ? [Research to do]
+
+# Future Work
+* Catmull Clark
+* Idea to investigate: Last few subdivision done on Compute Shader
+* Idea to investigate: ROAM paper and subdivision scheme
+* Implement variable size SSBOs
+* Implementation in Unity Game Engine (Christoph Riccio proposed to help)
+
+# Bibliography
+
+
+
+
+
+<!-- Markdeep footer -->
+<style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style>
+<script src="markdeep.min.js"></script>
+<script src="https://casual-effects.com/markdeep/latest/markdeep.min.js"></script>
+<script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>
