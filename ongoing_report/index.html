@@ -286,11 +286,11 @@ Since we chose to use the projected containing sphere diameter as the metric for
 
 The desirable effects of this triangulation are threefold:
 
-* We can now assume that **all the quadtrees are triangular**, and most of the parts of the project that had to be adapted to both quad and triangle primitive are now simplified. As long as we triangulate, we always obtain triangle quadtrees and only the last step of the mappings from leaf to World-Space is primitive-dependent. 
+* We can now assume that **all the quadtrees are triangular**, and most of the parts of the project that had to be adapted to both quad and triangle primitive are now simplified. As long as we triangulate, we always obtain triangle quadtrees and only the last step of the mappings from leaf to World-Space is primitive-dependent.
 
 * Since the base triangle is always a unit straight triangle $\{(0,0),(1,0),(0,1)\}$, we can deterministically  **always choose the same edge to be evaluated** for all drawn triangle: the hypotenuse $[(1,0)-(0,1)]$
 
-* By the construction of our triangulation, we are ensured that the triangles instanced along the borders of the mesh primitive always have their hypotenuse overlapping said mesh edge. And since the LoD is evaluated on this hypotenuse, we are ensured that **two triangles that are adjacent but belong to two different mesh primitive always have the same LoD**, see fig. [hypo_along_edge]. For that reason, all T-Junction that could arise always do inside of the mesh primitive, between two triangles that our algorithm created. Hence the T-Junction removal problem is much more constrained and easier to solve. 
+* By the construction of our triangulation, we are ensured that the triangles instanced along the borders of the mesh primitive always have their hypotenuse overlapping said mesh edge. And since the LoD is evaluated on this hypotenuse, we are ensured that **two triangles that are adjacent but belong to two different mesh primitive always have the same LoD**, see fig. [hypo_along_edge]. For that reason, all T-Junction that could arise always do inside of the mesh primitive, between two triangles that our algorithm created. Hence the T-Junction removal problem is much more constrained and easier to solve.
 
 ![Figure [hypo_along_edge]: Advantage of Triangulation: hypotenuse of (darker) border base triangle always along mesh edge (in red)](images/hypo_along_edge.svg)
 
@@ -298,7 +298,7 @@ The desirable effects of this triangulation are threefold:
 Subdiv_ScreenSpace (21 nov 2017)
 -------------------------
 
-Based on *Subdiv Mesh*: 
+Based on *Subdiv Mesh*:
 
 * Implementation of the triangulation for both quads and triangles
 * Implementation of the OpenSubdiv LoD function (projected sphere)
@@ -307,7 +307,7 @@ Based on *Subdiv Mesh*:
 Subdiv_ScreenSpace2D  (22 dec 2017)
 -------------------------
 
-To solve the T-Junction problem, the new _triangulation & Screen-Space metric_ approach required the Compute Pass to first detect and then remove T-Junctions in a local neighbourhood. 
+To solve the T-Junction problem, the new _triangulation & Screen-Space metric_ approach required the Compute Pass to first detect and then remove T-Junctions in a local neighbourhood.
 
 Detecting T-Junctions around a given triangle is equivalent to recovering the LoD of its adjacent triangles. By definition, a triangle can have only 3 neighbours, and as our instanced triangles are unit straight triangles, we can denote the H-Neighbour (H for hypotenuse), the X-Neighbour (sharing the $\left[(0,0) - (1,0)\right]$ edge), and the Y-neighbour (sharing the $\left[(0,0) - (0,1)\right]$ edge) as depicted in fig. [neighbours]. Since the LoD is evaluated on the hypotenuse, two H-Neighbours will always have the same LoD, and so at  a local scale, detecting T-Junctions consists in :
 
@@ -323,15 +323,15 @@ _Note that we always check  for lower LoD to avoid ping-pong situation between t
 
 ![Figure [neighbours]: Neighbours relative to the blue triangle](images/neighbours.svg width="850px")
 
-To facilitate the second part of T-Junction removal (the removal itself), we do this evaluation on the parent's level. So in the depicted scenario, the the four children of the blue triangle will evaluate the adjacent LoD for the same parent triangle. But since the two upper children (0 and 1) have no effect on the lower T-Junction and vice-versa, we can restrict the computation to detect T-Junctions along the relevant edge of the parent. The first step of the LoD check then becomes (leaving the rest of the algorithm unchanged): 
+To facilitate the second part of T-Junction removal (the removal itself), we do this evaluation on the parent's level. So in the depicted scenario, the the four children of the blue triangle will evaluate the adjacent LoD for the same parent triangle. But since the two upper children (0 and 1) have no effect on the lower T-Junction and vice-versa, we can restrict the computation to detect T-Junctions along the relevant edge of the parent. The first step of the LoD check then becomes (leaving the rest of the algorithm unchanged):
 
-1. Compute the relevant World-Space coordinates: 
+1. Compute the relevant World-Space coordinates:
 	* If current leaf is on the X border of the parent
-		* Compute the X-Neighbour hypotenuse World-Space coordinates 
+		* Compute the X-Neighbour hypotenuse World-Space coordinates
 	* Else (current leaf is on Y border of the parenz)
-		* Compute the Y-Neighbour hypotenuse World-Space coordinates 
+		* Compute the Y-Neighbour hypotenuse World-Space coordinates
 
-As easy as it sounds, the evaluation of the neighbour hypotenuse coordinates in World-Space has been much harder to solve than expected and took me 3 weeks of research. In the end I had three separate approach to this problem: 
+As easy as it sounds, the evaluation of the neighbour hypotenuse coordinates in World-Space has been much harder to solve than expected and took me 3 weeks of research. In the end I had three separate approach to this problem:
 
 1. Neighbour Key Recovering
 2. Pre-Mapping Reflect
@@ -341,8 +341,8 @@ As its name suggests, **Neighbour Key Recovering** consists in recovering the ke
 
 ![Figure [keys_extract]: Extract of a uniformly subdivided triangle quadtree at level 3](images/keys_extract.svg )
 
-As the keys are built recursively, the first approach has been to decode the keys in a recursive routine, during which we treat the last branching of the key. 
-More precisely, our recursive routine $N$ is composed of two recursive subroutine $X_n$ and $Y_n$ that respectively compute X and Y neighbourhood keys, and a deterministic subroutine $Out$ that is called when the key decoding and computation indicates that the neighbour key is in an adjacent root triangle (cf fig. [mappings_quad] and fig. [mappings_triangle]). Let us define a sub-key $A_i$ from an original key $A_0$ of level $n$ as 
+As the keys are built recursively, the first approach has been to decode the keys in a recursive routine, during which we treat the last branching of the key.
+More precisely, our recursive routine $N$ is composed of two recursive subroutine $X_n$ and $Y_n$ that respectively compute X and Y neighbourhood keys, and a deterministic subroutine $Out$ that is called when the key decoding and computation indicates that the neighbour key is in an adjacent root triangle (cf fig. [mappings_quad] and fig. [mappings_triangle]). Let us define a sub-key $A_i$ from an original key $A_0$ of level $n$ as
 $$A_i = q_n q_{n-1} q_{n-2} ... q_{i-2} q_{i-1} q_{i} \; \textrm{where} \; q_k \in \{0,1,2,3\} $$
 We obtain
 
@@ -360,27 +360,27 @@ Y_n(A_0) &= Y_n(312) \\
 \end{align}
 
 Looking at fig. [keys_extract], we see that 221 is indeed the Y-Neighbour of 312. From this key we can recover the World-Space position of the relevant neighbour hypotenuse. Since recursion is not achievable on GPU, I broke down the subroutines and merged them in a function that follows the same steps and evaluations but in a state machine manner, the next state being dictated by the treated branching.
-This method has the advantage of tearing down the isolation constraint of our subdivision, since we can now recover all the informations about neighbouring nodes. This could be very advantageous in the future (_e.g._ when optimizing for textures), but seems a bit overkill for the original purpose. 
+This method has the advantage of tearing down the isolation constraint of our subdivision, since we can now recover all the informations about neighbouring nodes. This could be very advantageous in the future (_e.g._ when optimizing for textures), but seems a bit overkill for the original purpose.
 
-This is why I started working on **Pre-Mapping Reflect**. The Idea is simple: we can easily compute the position of the hypotenuse of interest in Unit-Space, and from Unit-Space map it to World-Space. Depending on the relative position as a children, we choose one of two easily computed reflected hypotenuse and we then map these position to World-Space as we would have mapped the current node's parent, and we obtain the coordinates from which we can compute the LoD. 
+This is why I started working on **Pre-Mapping Reflect**. The Idea is simple: we can easily compute the position of the hypotenuse of interest in Unit-Space, and from Unit-Space map it to World-Space. Depending on the relative position as a children, we choose one of two easily computed reflected hypotenuse and we then map these position to World-Space as we would have mapped the current node's parent, and we obtain the coordinates from which we can compute the LoD.
 
 
 This approach works in most cases, but not when the current node is on the border of the root triangle and the desired neighbour lies on another root triangle. In this case, we reuse the $Out$ subroutine created for the recursive approach, compute the key of the neighbour of interest, and use it to map the standard unit hypotenuse to World-Space. We call $K_m$ the key used to map the Unit-Space hypotenuse $H_u$ and obtain the following algorithm:
 
 - If the desired neighbour is outside the current root triangle
 	- $K_m = Out(K_{node})$
-	- $H_u = \left[(1,0) - (0,1)\right]$ 
+	- $H_u = \left[(1,0) - (0,1)\right]$
 - Otherwise
 	- $K_m = Parent(K_{node})$
 	- If current node is on X Border of its parent
-		- $H_u = \left[(1,0) - (0,-1)\right]$ 
+		- $H_u = \left[(1,0) - (0,-1)\right]$
 	- Else (current node is on Y Border of its parent)
 		- $H_u = \left[(-1,0) - (0,1)\right]$  
-- Map $H_u$ to World-Space using $K_m$ 
+- Map $H_u$ to World-Space using $K_m$
 
 ![Figure [unit_neigh]: Reflected hypotenuses in Unit-Space](images/unit_neighbours.svg width="550px")
 
-The only problem with this approach is that we still need to map the unit reflected hypotenuse to World-Space from the key, which is quite expensive. For this reason, we developed the **Post-Mapping Reflect**, which consist in reflecting the parent's hypotenuse _after_ we apply the mappings to the hypotenuse. Since we already computed the World-Space coordinates of the current node hypotenuse to evaluate its LoD, this approach allows us to save some computation and use these directly to compute the desired World-Space coordinates. We define the reflection $Reflect(P,O)$ as 
+The only problem with this approach is that we still need to map the unit reflected hypotenuse to World-Space from the key, which is quite expensive. For this reason, we developed the **Post-Mapping Reflect**, which consist in reflecting the parent's hypotenuse _after_ we apply the mappings to the hypotenuse. Since we already computed the World-Space coordinates of the current node hypotenuse to evaluate its LoD, this approach allows us to save some computation and use these directly to compute the desired World-Space coordinates. We define the reflection $Reflect(P,O)$ as
 \begin{align}
 Reflect(P,C) &= C + \vec{PC} \\
 & =  2C+P
@@ -389,7 +389,7 @@ We note $O$, $U$ and $R$ as in fig. [notations] and we call the two end-points o
 
 ![Figure [notations]: Notations for the Post-Mapping Reflect](images/notations_reflect.svg)
 
-We now consider the nodes at the leaf level and not the parent, and we can now separate the 4 cases corresponding to the 4 position relative to the parent. 
+We now consider the nodes at the leaf level and not the parent, and we can now separate the 4 cases corresponding to the 4 position relative to the parent.
 
 * **Case 0**: (fig. [PostMap_0])
 \begin{align*}
@@ -412,15 +412,15 @@ H_1 &= Reflect(H_0,T)
 H_0 &= Reflect(U,O) \\
 T  &= Reflect(R,O) \\
 H_1 &= Reflect(H_0,T)
-\end{align*} 
+\end{align*}
 
 
 * **Case 3**: (fig. [PostMap_23])
 \begin{align*}
 H_0 &= R \\
 T  &= Reflect(U,O) \\
-H_1 &= Reflect(H_0,T) 
-\end{align*} 
+H_1 &= Reflect(H_0,T)
+\end{align*}
 
 ![Figure [PostMap_0]: Post-Mapping Reflection of the hypotenuse for child 0](images/PostMap_0.svg)
 
@@ -429,19 +429,19 @@ H_1 &= Reflect(H_0,T)
 ![Figure [PostMap_23]: Post-Mapping Reflection of the hypotenuse for children 2 and 3](images/PostMap_23.svg)
 
 Once we have these World-Space coordinates, we don't need to map anything and can compute the neighbour's LoD directly. If the neighbours lies outside the current root triangle, we compute the LoD in the same manner as in _Pre-Mapping Reflect_.
-Once we merged the Compute and Cull pass (see section _Implementation Details_ in the thesis), the _Post-Mapping Reflect method_ has been chosen as the final implementation of the neighbour LoD check for its efficiency, since we reuse the World-Space coordinates we already computed.
+Once we merged the Compute and Cull pass (see section _Implementation Details_ in the thesis), the _Post-Mapping Reflect method_ the _Post-Mapping Reflect method_ became the most efficient neighbour LoD evaluation method (just reuse the already computed W.-S. coordinates), but it cannot be used when the surface is displaced (from a map or a parametric form). Indeed, if we reflect the world space coordinate, we assume the rest of the quadtree lies on the same plane as the current triangle, and this is true only when the new geometry stays on the mesh primitive plane and is not displaced. If we apply displacement to the surface, we should use the _Pre-Mapping Reflect_.
 
-Now that the LoD of the neighbour is evaluated, we can deterministically detect any T-Junction in the local neighbourhood of the currently treated quadtree leaf. What remains to be determined is the **removal of discovered T-Junction**. 
+Now that the LoD of the neighbour is evaluated, we can deterministically detect any T-Junction in the local neighbourhood of the currently treated quadtree leaf. What remains to be determined is the **removal of discovered T-Junction**.
 
-Recall that in all the neighbour LoD check methods, two leaves sharing the same border of their parent will evaluate the same neighbour, hence detecting the same T-Junction if there should be one. _E.g._ in fig. [unit_neigh], if there was a T-Junction between the X-Neighbour and the parent of the four children, both children 2 and 3 will detect it. For this reason, we reserve in the key data-structure 3 bits that serve as flags for _X morph_, _Y morph_ and _Destroy_. Since leaves that detect a T-Junction always do so in pairs, we destroy the odd child and morph the even child to take both of their places. To come back to our example, in fig. [unit_neigh] the child 3 will get destroyed and the child 2 will be morphed to take both of their places, as illustrated in fig. [morph]. 
+Recall that in all the neighbour LoD check methods, two leaves sharing the same border of their parent will evaluate the same neighbour, hence detecting the same T-Junction if there should be one. _E.g._ in fig. [unit_neigh], if there was a T-Junction between the X-Neighbour and the parent of the four children, both children 2 and 3 will detect it. For this reason, we reserve in the key data-structure 3 bits that serve as flags for _X morph_, _Y morph_ and _Destroy_. Since leaves that detect a T-Junction always do so in pairs, we destroy the odd child and morph the even child to take both of their places. To come back to our example, in fig. [unit_neigh] the child 3 will get destroyed and the child 2 will be morphed to take both of their places, as illustrated in fig. [morph].
 
 ![Figure [morph]: T-Junction removing approach](images/morph.svg)
 
-In conclusion, our T-Junction removal approach allows us to 
+In conclusion, our T-Junction removal approach allows us to
 
 * **Detect all T-Junction** in the created subdivision
 * **Remove them all**
-* Every T-Junction kills an odd octree leaf => **1 less triangle to render per T-Junction** 
+* Every T-Junction kills an odd octree leaf => **1 less triangle to render per T-Junction**
 * The morph bit is propagated along with the key, allowing the render pass to **morph directly when computing the mapping** from Unit-Space to World-Space using the key
 
 Most of this have been implemented in Subdiv ScreenSpace2D
@@ -463,7 +463,7 @@ Subdiv_ScreenSpace3D 09 janv 2018
 
 Subdiv Screenspace3D Merged 16 jan 2018
 -------------------------
-* **Rewrite of the buffer architecture for indirect calls**: replaced the arrays of `DrawIndirectCommand` and `DispatchIndirectCommand` in which I atomically incremented the number of instances to render from the Compute Pass and the Cull Pass by an array of atomic counters, which value I copy in a single (Dispatch and Draw) Indirect Command. 
+* **Rewrite of the buffer architecture for indirect calls**: replaced the arrays of `DrawIndirectCommand` and `DispatchIndirectCommand` in which I atomically incremented the number of instances to render from the Compute Pass and the Cull Pass by an array of atomic counters, which value I copy in a single (Dispatch and Draw) Indirect Command.
 
 * **Merge of the Compute and the Cull Pass** to be able to reuse the World-Space coordinates computed for the LoD evaluation. At each instance, we read a key, compute the coordinates, evaluate the LoD, write the key in the _Full Buffer_ for the next compute pass, increment the bound atomic counter holding the number of leaves in the _Full Buffer_, check for T-Junction, check for culling, write in the _Culled Buffer_ for the upcoming Render Pass, and finally increment the bound atomic counter holding the number of leaves in the _Culled Buffer_
 
@@ -478,7 +478,7 @@ Subdiv Screenspace3D Merged 16 jan 2018
 * LoD to 0 out of the frustum (Veeeeery bad for Restricted Quadtree constraint)
 
 
-PN Phong interpolation 
+PN Phong interpolation
 -------------------------
 * Implementation of **Curved PN and Phong Interpolation**
 
